@@ -12,8 +12,8 @@ services:
     volumes:
       - C:/Users/sapon/Desktop/docker-compose2/volumes:/data
   www:
-    container_name: ubuntu/apache2
-    image: apache2
+    container_name: apache2
+    image: ubuntu/apache2
     restart: always
     ports:
       - "80:80"
