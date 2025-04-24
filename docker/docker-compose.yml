@@ -1,0 +1,20 @@
+services:
+  db:
+    container_name: pg_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - C:/Users/sapon/Desktop/docker-compose2/volumes:/data
+  www:
+    container_name: ubuntu/apache2
+    image: apache2
+    restart: always
+    ports:
+      - "80:80"
+      
