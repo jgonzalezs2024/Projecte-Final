@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - C:/Users/sapon/Desktop/docker-compose2/volumes:/data
+      - ./volumen_db:/var/lib/postgresql/data
   pgadmin:
     container_name: pgadmin4_container
     image: dpage/pgadmin4
@@ -26,4 +26,6 @@ services:
     restart: always
     ports:
       - "80:80"
+    volumes:
+      - ./volumen_apache2:/var/www/html
       
