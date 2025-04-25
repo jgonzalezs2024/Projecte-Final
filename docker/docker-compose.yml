@@ -11,6 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - ./volumen_db:/var/lib/postgresql/data
+      
   pgadmin:
     container_name: pgadmin4_container
     image: dpage/pgadmin4
@@ -28,4 +29,5 @@ services:
       - "80:80"
     volumes:
       - ./volumen_apache2:/var/www/html
+
       
