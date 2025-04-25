@@ -88,7 +88,7 @@ while (Serial1.available()) {
                 }
                 uidString += String(mfrc522.uid.uidByte[i], HEX);
             }
-            consulta=uidString;
+            peticio=uidString;
             prova1 = false;
             mfrc522.PICC_HaltA();
         }
