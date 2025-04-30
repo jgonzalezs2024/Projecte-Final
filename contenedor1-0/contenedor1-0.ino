@@ -94,25 +94,17 @@ while (Serial1.available()) {
         }
       }
     }
-    Serial.println("Enviando UID a ESP32: " + peticio);
-    peticio.concat("\n");
-    enviar_dades_arduino(peticio);
-    resultat = "0";
-    while (resultat == "0") {
-      resultat = llegir_dades_arduino();
-    }
-    c = 0;
-    str = "";
+    resultat = funcio_peticio_web_simplificada();
     if (resultat == "-1") {
       // ACCESO DENEGADO (en mayúsculas)
-      lcd.setCursor(1, 1);
-      lcd.print("Acceso denegado");
+      Serial.println("DENEGADO");
     } else if (resultat == "0") {
       Serial.println("ERROR");
     } else {
       // ABRIR PUERTA
       // DELAY(30000)
       // CERRAR PUERTA
+      Serial.println("ACCESO PERMITIDO");
       Serial.print("Peso: ");
       Serial.print(balanza.get_units(20),3);
       Serial.println(" kg");
@@ -130,4 +122,48 @@ while (Serial1.available()) {
 
   // put your main code here, to run repeatedly:
 
+}
+void enviar_dades_arduino(String dades) {
+  // Serial.println(dades);
+  Arduino_Serial.print(dades);
+}
+
+// Funció per a esperar la resposta de la ESP
+String llegir_dades_arduino() {
+  // Llegim les dades caràcter a caràcter
+  while (Arduino_Serial.available() > 0) {
+      // Llegim un caràcter i, si no és \n,
+      // l’afegim a la cadena
+      cC = Arduino_Serial.read();
+      if (cC == '\n') {
+          break;
+      } else {
+          str += cC;
+      }
+  }
+
+  if (cC == '\n') {
+      // Hem obtingut una resposta perquè hem arribat al caràcter
+      // de fí de resposta que es el salt de línia (\n)
+      // Retornem la petició rebuda
+      return str;
+  }
+
+  // Si no estem rebent dades de la ESP retornem la cadena "0"
+  // fet que indica que no estem rebent resposta
+  return "0";
+}
+
+
+String funcio_peticio_web_simplificada(peticio){
+  Serial.println("Enviando UID a ESP32: " + peticio);
+  peticio.concat("\n");
+  enviar_dades_arduino(peticio);
+  resultat = "0";
+  while (resultat == "0") {
+    resultat = llegir_dades_arduino();
+  }
+  c = 0;
+  str = "";
+  return resultat;
 }
