@@ -1,4 +1,3 @@
-#include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <MFRC522.h>

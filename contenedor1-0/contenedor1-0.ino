@@ -100,7 +100,7 @@ while (Serial1.available()) {
       Serial.println("DENEGADO");
     } else if (resultat == "0") {
       Serial.println("ERROR");
-    } else {
+    } else if (resultat == "1"){
       // ABRIR PUERTA
       // DELAY(30000)
       // CERRAR PUERTA
@@ -162,6 +162,7 @@ String funcio_peticio_web_simplificada(String peticio){
   resultat = "0";
   while (resultat == "0") {
     resultat = llegir_dades_arduino();
+    Serial.println(resultat);
   }
   c = 0;
   str = "";

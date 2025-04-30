@@ -29,5 +29,10 @@ services:
       - "80:80"
     volumes:
       - ./volumen_apache2:/var/www/html
+    command: >
+      bash -c "apt-get update && 
+               apt-get install -y php8.3 php8.3-pgsql libapache2-mod-php &&
+               service apache2 restart && 
+               tail -f /dev/null"
 
       
