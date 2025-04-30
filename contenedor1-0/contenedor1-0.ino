@@ -94,7 +94,7 @@ while (Serial1.available()) {
         }
       }
     }
-    resultat = funcio_peticio_web_simplificada();
+    resultat = funcio_peticio_web_simplificada(peticio);
     if (resultat == "-1") {
       // ACCESO DENEGADO (en mayúsculas)
       Serial.println("DENEGADO");
@@ -155,7 +155,7 @@ String llegir_dades_arduino() {
 }
 
 
-String funcio_peticio_web_simplificada(peticio){
+String funcio_peticio_web_simplificada(String peticio){
   Serial.println("Enviando UID a ESP32: " + peticio);
   peticio.concat("\n");
   enviar_dades_arduino(peticio);
