@@ -24,9 +24,9 @@ const int echoPin = 10;
 void setup() {
   pinMode(trigPin, OUTPUT);     // Define TRIG como saída
   pinMode(echoPin, INPUT);      // Define ECHO como entrada
-  Arduino_Serial.begin(115200);
+  Arduino_Serial.begin(9600);
   Serial.begin(115200); // Iniciem la comunicació en sèrie
-  Serial1.begin(9600);
+  Serial1.begin(57600);
   SPI.begin(); // Iniciem el Bus SPI
   mfrc522.PCD_Init(); // Iniciem el MFRC522
 
