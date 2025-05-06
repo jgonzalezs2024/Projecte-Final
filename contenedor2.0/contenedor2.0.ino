@@ -9,6 +9,7 @@
 const int DOUT=A1;
 const int CLK=A0;
 HX711 balanza;
+int id_container = 1;
 
 TinyGPSPlus gps;
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Creem l’objete per a el RC522
@@ -103,9 +104,23 @@ void loop() {
       // ABRIR PUERTA
       // DELAY(30000)
       // CERRAR PUERTA
+      peticio += "&pes=";
+      float pes = balanza.get_units(20);
+      peticio += String(pes, 2);
+      peticio += "&id_container=" + String(id_container);
+      enviar_i_rebre_dades(peticio);
+      Serial.println(resultat);
+      miNumero = resultat.toInt();
+      if (miNumero == -1) {
+        // ACCESO DENEGADO (en mayúsculas)
+        Serial.println("REGISTRO DENEGADO");
+      } else if (miNumero == 1){
+        Serial.println("REGISTRO COMPLETADO");
+      }
       Serial.println("ACCESO PERMITIDO");
       Serial.print("Peso: ");
-      Serial.print(balanza.get_units(20),3);
+      Serial.print(balanza.get_units(20));
+
       Serial.println(" kg");
       delay(500);
 

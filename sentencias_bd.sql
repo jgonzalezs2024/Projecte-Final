@@ -14,11 +14,13 @@ CREATE TABLE rfid (
 );
 
 CREATE TABLE metricas (
-    id_container INTEGER PRIMARY KEY REFERENCES container(id),
+    id SERIAL,
+    id_container INTEGER REFERENCES container(id),
     peso_actual NUMERIC(10,2) NOT NULL,
     fecha_actual TIMESTAMP NOT NULL,
     num_serie VARCHAR(255) REFERENCES rfid(num_serie)
 );
+
 
 CREATE TABLE vaciados (
     id_container INTEGER REFERENCES container(id),
