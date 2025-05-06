@@ -7,7 +7,7 @@
 // INCLUDES PER A LA COMUNICACIÓ AMB L'ARDUINO
 // I LA MANIPULACIÓ DE CADENES DE CARÀCTERS
 #include <StringSplitter.h>
-String serverName="http://192.168.110.65:80/";
+String serverName="http://192.168.110.33:80/";
 const char* ssid = "Aula110";
 const char* password = "aula110aula110";
 // Variable que contindrà el codi de resposta de la petició HTTP
@@ -24,10 +24,6 @@ void setup() {
   Serial.println();
   Serial.print("Conectandose a red : ");
   Serial.println(ssid);
-    // Establece la IP fija antes de conectar
-  // if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-  //   Serial.println("❌ Error al configurar la IP estática");
-  // }
   
   // Iniciem el mòdul de connexió WIFI amb el SSID i la contrasenya
   WiFi.begin(ssid, password); 
@@ -56,7 +52,6 @@ void loop() {
     msg.trim();  // Limpia caracteres de nueva línea o espacios
     Serial.println(msg);
 
-
     // Construir la URL con el valor recibido
     url = serverName + msg;
 
@@ -82,5 +77,4 @@ void loop() {
       Serial2.println("WiFi no conectado");
     }
   }
-
 }

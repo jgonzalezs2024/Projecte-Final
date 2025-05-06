@@ -1,6 +1,6 @@
 <?php
 //$conector = mysqli_connect("localhost", "root", "root", "arduino_db", "5432");
-$conector = pg_connect("host=db port=5432 dbname=arduino user=root password=root");
+$conector = pg_connect("host=db port=5432 dbname=arduino user=root password=alumne");
 if (!$conector) {
     echo "ERROR: No se pudo conectar a PostgreSQL.";
     exit;
