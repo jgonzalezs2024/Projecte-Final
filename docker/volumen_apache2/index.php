@@ -30,6 +30,16 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
         echo "-1";
     }
     
+} else if (isset($_GET['activo'], $_GET['id_container'])) {
+    $id_container = (int)$_GET['id_container'];
+    $activo= $_GET['activo'];
+    $query = "INSERT INTO container (id_container, peso_actual, fecha_actual, num_serie)
+              VALUES ($id_container, $pes, NOW(), '$uid')";
+
+    $sql = "UPDATE tu_tabla SET activo = ? WHERE id_container = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $activo, $id_container);
+    $stmt->execute();
 }
 pg_close($conector);
 ?>

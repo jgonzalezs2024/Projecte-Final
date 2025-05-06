@@ -9,13 +9,13 @@
 const int DOUT=A1;
 const int CLK=A0;
 HX711 balanza;
-int id_container = 1;
+String id_container = 1;
 
 TinyGPSPlus gps;
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Creem l’objete per a el RC522
 byte ActualUID[4]; // Emmagatzemarà codi únic llegit de la targeta
 String peticio, resultat, consulta;
-bool prova;
+bool prova, vacio;
 const int trigPin = 9;
 const int echoPin = 10;
 const int trigPin2 = 11;
@@ -43,6 +43,9 @@ void setup() {
   balanza.set_scale(12200); // Establecemos la escala
   balanza.tare(20);  //El peso actual es considerado Tara.
   Serial.println("Listo para pesar");
+
+  // Variable booleana para comparar si el container esta vacio (incialmente siempre es true)
+  vacio = true
 }
 
 void loop() {
@@ -83,6 +86,10 @@ void loop() {
   Serial.println(distance);
 
   if (distance >= 15.00 || distance2 >= 15.00){
+    if (vacio != true) {
+      // Construir consulta para actualizar el valor de false a true
+      vacio = true;
+    }
     Serial.println("PERMITIDO");
     Serial.println("Lectura i accés del UID");
     delay(2000);
@@ -122,7 +129,7 @@ void loop() {
       peticio += "&pes=";
       float pes = balanza.get_units(20);
       peticio += String(pes, 2);
-      peticio += "&id_container=" + String(id_container);
+      peticio += "&id_container=" + id_container;
       enviar_i_rebre_dades(peticio);
       Serial.println(resultat);
       control = resultat.toInt();
@@ -140,6 +147,9 @@ void loop() {
     }
   } else {
     Serial.println("DENEGADO222");
+    peticio="?activo=false&id_container=" + id_container;
+    enviar_i_rebre_dades(peticio)
+    vacio = false;
     delay(5000);
   }
 
