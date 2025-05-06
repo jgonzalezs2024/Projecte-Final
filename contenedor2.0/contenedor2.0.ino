@@ -129,6 +129,7 @@ void loop() {
     }
   } else {
     Serial.println("DENEGADO222");
+    delay(5000);
   }
 
 
