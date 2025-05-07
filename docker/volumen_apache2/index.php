@@ -30,6 +30,43 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
         echo "-1";
     }
     
+} else if (isset($_GET['activo'], $_GET['id_container'])) {
+    $id_container = (int)$_GET['id_container'];
+    $activo = ($_GET['activo'] == 1) ? 'true' : 'false';
+    $query = "UPDATE container SET activo = $activo WHERE id = $id_container";
+    $resultado = pg_query($conector, $query);
+    // var_dump($query);
+    if ($resultado) {
+        echo "1";
+    } else {
+        echo "-1";
+    }
+} else if (isset($_GET['comprovacio'], $_GET['id_container'])) {
+    $id_container = (int)$_GET['id_container'];
+    $activo = ($_GET['comprovacio'] == 1) ? 'true' : 'false';
+    $query = "SELECT activo FROM container WHERE id = $id_container";
+    $resultado = pg_query($conector, $query);
+    // var_dump($query);
+    if ($resultado && $registro = pg_fetch_assoc($resultado)) {
+        $enviar=($registro['activo']);
+        echo "$enviar";
+    } else {
+        $enviar=($registro['activo']);
+        echo "$enviar";
+    }
+} else if (isset($_GET['lat'], $_GET['lng'], $_GET['id_container'])){
+    $id_container = (int)$_GET['id_container'];
+    $lat = (double)$_GET['lat']; 
+    $lng = (double)$_GET['lng']; 
+    $query = "UPDATE container SET latitud_actual = $lat, longitud_actual = $lng WHERE id = $id_container";
+    $resultado = pg_query($conector, $query);
+    // var_dump($query);
+    if ($resultado) {
+        echo "1";
+    } else {
+        echo "-1";
+    }
 }
+
 pg_close($conector);
 ?>

@@ -1,9 +1,9 @@
 CREATE TABLE container (
     id SERIAL PRIMARY KEY,
     tipo VARCHAR(50) NOT NULL,
-    activo BOOLEAN NOT NULL,
-    longitud_actual DOUBLE PRECISION NOT NULL,
-    latitud_actual DOUBLE PRECISION NOT NULL
+    activo BOOLEAN NOT NULL DEFAULT true,
+    longitud_actual DOUBLE PRECISION,
+    latitud_actual DOUBLE PRECISION
 );
 
 CREATE TABLE rfid (
