@@ -1,0 +1,10 @@
+Introducción
+La gestión eficiente de los residuos urbanos es una necesidad para cualquier ciudad, ya que cada vez generamos más basura. A día de hoy, los sistemas de recogida funcionan de una manera ineficiente, ya que las rutas suelen ser fijas, con frecuencias determinadas, lo que provoca gastos energéticos innecesarios.
+
+En nuestro proyecto proponemos un sistema de control de residuos más eficiente. Hemos creado un contenedor con tecnología Arduino, capaz de registrar datos cada vez que se produce una apertura. Los contenedores incluyen sensores de peso, sensores ultrasónicos, módulo GPS, lectores de tarjetas RFID y un motor para la apertura automática de la tapa.
+
+Con esta solución, podemos generar rutas automatizadas y optimizadas para la recogida de residuos, ya que solo se activarán cuando los contenedores alcancen un determinado nivel de llenado. Todo esto es posible gracias a una infraestructura compuesta por dos servidores: uno encargado de almacenar los registros en una base de datos, y otro que gestiona toda la infraestructura web.
+
+Además, la recopilación continua de datos genera un volumen significativo de información útil. Nos permite detectar situaciones de sobrecarga o infrautilización, con el objetivo de redistribuir los contenedores de forma más eficiente según las necesidades reales de cada zona. También es posible registrar qué persona utiliza qué contenedor, cuándo lo hace y qué cantidad de residuos deposita, ya que el sistema RFID está vinculado a cada usuario.
+
+Este sistema abre la puerta a un control de residuos más exhaustivo por parte de la administración, permitiendo identificar comportamientos irresponsables o la falta de reciclaje. Esto facilitará la implantación de políticas basadas en la responsabilidad individual, como incentivos por reciclar o sanciones por malas prácticas.
