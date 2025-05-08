@@ -5,6 +5,9 @@
 #include "HX711.h"
 #define RST_PIN 5 // Pin número 5 para el RST del RC522
 #define SS_PIN 53 // Pin número 53 para el SS (SDA) del RC522
+#define RGB_GREEN 3
+#define RGB_BLUE 2
+#define RGB_RED 6
 int control;
 const int DOUT=A1;
 const int CLK=A0;
@@ -20,8 +23,11 @@ const int trigPin = 9;
 const int echoPin = 10;
 const int trigPin2 = 11;
 const int echoPin2 = 12;
-
+float pes;
 void setup() {
+  pinMode (RGB_RED, OUTPUT);
+  pinMode (RGB_GREEN, OUTPUT);
+  pinMode (RGB_BLUE, OUTPUT);
   pinMode(trigPin, OUTPUT);     // Define TRIG como saída
   pinMode(echoPin, INPUT);
   pinMode(trigPin2, OUTPUT);
@@ -57,7 +63,7 @@ void setup() {
 
       Serial.print("Longitud: ");
       Serial.println(gps.location.lng(), 6);
-      peticio="?lat=" + lat + "&lng=" + lng + "&id_container" + id_container;
+      peticio="?lat=" + String(lat) + "&lng=" + String(lng) + "&id_container" + id_container;
       // peticio="?lat=45.224152&lng=3.725570&id_container=2";
       resultat = enviar_i_rebre_dades(peticio);
       Serial.println(resultat);
@@ -85,10 +91,17 @@ void setup() {
   } else if (resultat == "t"){
     Serial.println("VARIABLE TRUE");
     activo = true;
+    digitalWrite(RGB_GREEN, LOW); 
+    digitalWrite(RGB_BLUE, HIGH); 
+    digitalWrite(RGB_RED, HIGH);
   }
 }
 
 void loop() {
+  digitalWrite(RGB_GREEN, LOW); 
+  digitalWrite(RGB_BLUE, HIGH); 
+  digitalWrite(RGB_RED, HIGH);
+  delay(5000);
 
   // Sensor ultrasónico 1
   digitalWrite(trigPin, LOW);
@@ -113,6 +126,8 @@ void loop() {
   Serial.println(distance);
 
   if (distance >= 15.00 || distance2 >= 15.00){
+    
+
     if (activo != true) {
       // Construir consulta para actualizar el valor de false a true
       peticio="?activo=1&id_container=" + id_container;
@@ -156,6 +171,10 @@ void loop() {
     if (control == -1) {
       // ACCESO DENEGADO (en mayúsculas)
       Serial.println("DENEGADO");
+      digitalWrite(RGB_GREEN, HIGH); 
+      digitalWrite(RGB_BLUE, LOW); 
+      digitalWrite(RGB_RED, HIGH);
+      delay(5000);
     } else if (control == 0) {
       Serial.println("ERROR");
     } else if (control == 1){
@@ -163,7 +182,7 @@ void loop() {
       // DELAY(30000)
       // CERRAR PUERTA
       peticio += "&pes=";
-      float pes = balanza.get_units(20);
+      pes = balanza.get_units(20);
       peticio += String(pes, 2);
       peticio += "&id_container=" + id_container;
       enviar_i_rebre_dades(peticio);
@@ -183,6 +202,9 @@ void loop() {
     }
   } else {
     Serial.println("DENEGADO222");
+    digitalWrite(RGB_GREEN, HIGH); 
+    digitalWrite(RGB_BLUE, HIGH); 
+    digitalWrite(RGB_RED, LOW);
     if (activo != false) {
       // Construir consulta para actualizar el valor de false a true
       peticio="?activo=0&id_container=" + id_container;
@@ -195,10 +217,11 @@ void loop() {
       } else if (control == 1){
         Serial.println("REGISTRO ACTUALIZADO");
         activo = false;
+
         peticio="?activo=0&id_container=" + id_container;
 
       }
-      peticio="?id_container=" + id_container + "&lat=45.224152&lng=3.725570" + "&pes=" + pes;
+      peticio="?id_container=" + id_container + "&lat=45.224152&lng=3.725570" + "&pes=" + String(pes, 2);
       resultat = enviar_i_rebre_dades(peticio);
       Serial.println(resultat);
       control = resultat.toInt();
