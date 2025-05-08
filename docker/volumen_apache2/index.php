@@ -20,7 +20,7 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
     $id_container = (int)$_GET['id_container'];
     $pes = (float)$_GET['pes'];
     $query = "INSERT INTO metricas (id_container, peso_actual, fecha_actual, num_serie)
-              VALUES ($id_container, $pes, NOW(), '$uid')";
+              VALUES ($id_container, $pes, NOW()::TIMESTAMP(0), '$uid')";
     // var_dump($query);
     $resultado = pg_query($conector, $query);
     
@@ -54,13 +54,27 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
         $enviar=($registro['activo']);
         echo "$enviar";
     }
-} else if (isset($_GET['lat'], $_GET['lng'], $_GET['id_container'])){
+} else if (isset($_GET['lat'], $_GET['lng'], $_GET['id_container']) && count($_GET) === 3){
     $id_container = (int)$_GET['id_container'];
     $lat = (double)$_GET['lat']; 
     $lng = (double)$_GET['lng']; 
     $query = "UPDATE container SET latitud_actual = $lat, longitud_actual = $lng WHERE id = $id_container";
     $resultado = pg_query($conector, $query);
     // var_dump($query);
+    if ($resultado) {
+        echo "1";
+    } else {
+        echo "-1";
+    }
+} else if (isset($_GET['lat'], $_GET['lng'], $_GET['id_container'], $_GET['pes'])){
+    $id_container = (int)$_GET['id_container'];
+    $lat = (double)$_GET['lat']; 
+    $lng = (double)$_GET['lng'];
+    $pes = (float)$_GET['pes']; 
+    $query = "INSERT INTO vaciados (id_container, peso_vaciado, fecha_vaciado, latitud_vaciado, longitud_vaciado)
+              VALUES ($id_container, $pes, NOW()::TIMESTAMP(0), $lat, $lng)";
+    $resultado = pg_query($conector, $query);
+    var_dump($query);
     if ($resultado) {
         echo "1";
     } else {
