@@ -33,7 +33,7 @@ void setup() {
   pinMode(trigPin2, OUTPUT);
   pinMode(echoPin2, INPUT);
   Serial.begin(115200);
-  Serial1.begin(57600);
+  Serial1.begin(9600);
   Serial2.begin(9600); // TX2 = 16, RX2 = 17
   delay(1000);
   Serial.println("Arduino Mega listo.");
@@ -51,7 +51,6 @@ void setup() {
   Serial.println("Listo para pesar");
 
   while (Serial1.available()) {
-    Serial.println("GPS ACTIVO");
     char c = Serial1.read();
     gps.encode(c);
 

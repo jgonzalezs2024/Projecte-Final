@@ -1,0 +1,13 @@
+Ultrasonico 1 >>    GND > GND     ECHO > 10DIG     TRIG > 9DIG   VSCC > 5V
+Ultrasonico 2 >>    GND > GND     ECHO > 12DIG     TRIG > 11DIG  VSCC > 5V
+RFID >>    SDA > 53DIG     SCK > 52DIG    MOSI > 51DIG     MISO > 50DIG    GND > GND    RST > 5DIG    3.3V > 3.3V
+H7X11 (BALANZA)>>            GND > GND     DT > A1 ANALOG   SCK > A0 ANALOG     VCC > 5V
+LED >>              RED > 6     GREEN > 3    BLUE > 2    LARGO > 5V
+SENSOR GPS >>       VSC > 5V    GND > GND    RXD > 18COM  TXD > 19COM
+ESP32       >> 17COM > G33   >> 16COM > G32
+3 CABLES PARA TRANSPORTAR TIERRA
+
+
+Inventario:
+16 MACHO MACHO
+16 MACHO HEMBRA
