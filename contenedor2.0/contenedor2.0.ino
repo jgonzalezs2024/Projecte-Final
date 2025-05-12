@@ -220,6 +220,7 @@ void loop() {
         peticio="?activo=0&id_container=" + id_container;
 
       }
+      
       peticio="?id_container=" + id_container + "&lat=45.224152&lng=3.725570" + "&pes=" + String(pes, 2);
       resultat = enviar_i_rebre_dades(peticio);
       Serial.println(resultat);
