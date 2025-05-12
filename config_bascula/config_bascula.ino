@@ -13,7 +13,7 @@ void setup() {
   Serial.println("No ponga ningun  objeto sobre la balanza");
   Serial.println("Destarando...");
   Serial.println("...");
-  balanza.set_scale(-36876); // Establecemos la escala
+  balanza.set_scale(-30894); // Establecemos la escala
   balanza.tare(20);  //El peso actual es considerado Tara.
   
   Serial.println("Listo para pesar");  
