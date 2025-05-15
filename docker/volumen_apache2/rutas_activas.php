@@ -40,7 +40,7 @@ $conn = null;
 <body>
     <header>
         <div class="container">
-            <h1>Panel de Administración</h1>
+            <h1>Panel de Administración - Rutas Activas</h1>
             <nav>
                 <ul>
                     <li><a href="inicio.php">Inicio</a></li>

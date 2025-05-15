@@ -68,7 +68,7 @@ $lat = 41.259746;
 $lng = 1.77607;
 
 // Tu clave de API (reemplaza 'TU_API_KEY' por la tuya)
-$apiKey = 'AIzaSyBJtK5bUXqKxgTTKVESVyH0uNs9N0uCgUM';
+$apiKey = 'xxx';
 
 // Llamar a la función y mostrar el resultado
 $direccion = obtenerCalleYNumero($lat, $lng, $apiKey);

@@ -9,7 +9,7 @@ $password = "root"; // Tu contraseña de PostgreSQL
 $dbname = "arduino";        // El nombre de tu base de datos
 
 // Clave API de Google Maps para Geocoding
-$api_key = 'AIzaSyBJtK5bUXqKxgTTKVESVyH0uNs9N0uCgUM'; // Reemplaza con tu clave de API
+$api_key = 'xxxx'; // Reemplaza con tu clave de API
 
 // Conexión a la base de datos PostgreSQL usando PDO
 try {
