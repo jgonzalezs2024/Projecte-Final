@@ -86,6 +86,9 @@ void setup() {
     // ACCESO DENEGADO
     Serial.println("VARIABLE FALSE");
     activo = false;
+    digitalWrite(RGB_GREEN, HIGH); 
+    digitalWrite(RGB_BLUE, HIGH); 
+    digitalWrite(RGB_RED, LOW);
 
   } else if (resultat == "t"){
     Serial.println("VARIABLE TRUE");
@@ -97,10 +100,10 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(RGB_GREEN, LOW); 
-  digitalWrite(RGB_BLUE, HIGH); 
-  digitalWrite(RGB_RED, HIGH);
-  delay(5000);
+  // digitalWrite(RGB_GREEN, LOW); 
+  // digitalWrite(RGB_BLUE, HIGH); 
+  // digitalWrite(RGB_RED, HIGH);
+  // delay(5000);
 
   // Sensor ultrasónico 1
   digitalWrite(trigPin, LOW);
@@ -124,7 +127,7 @@ void loop() {
   Serial.println(distance2);
   Serial.println(distance);
 
-  if (distance >= 15.00 || distance2 >= 15.00){
+  if (distance >= 10.00 || distance2 >= 10.00){
     
 
     if (activo != true) {
@@ -231,6 +234,7 @@ void loop() {
       } else if (control == 1){
         Serial.println("REGISTRO EXITOSO EN VACIADOS");
       }
+      
     }
     delay(5000);
 }

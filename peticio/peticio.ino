@@ -13,8 +13,6 @@ const char* password = "aula110aula110";
 // Variable que contindrà el codi de resposta de la petició HTTP
 int httpResponseCode;
 
-// Variable que contindrà l’adreça URL de la petició HTTP
-String serverPath;
 char c;
 String str, peticio, url;
 void setup() {

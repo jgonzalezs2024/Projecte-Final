@@ -6,6 +6,13 @@ CREATE TABLE container (
     latitud_actual DOUBLE PRECISION
 );
 
+CREATE TABLE rutas_activas (
+    id SERIAL PRIMARY KEY,
+    id_ruta INTEGER NOT NULL,
+    id_contenedor INTEGER NOT NULL REFERENCES container(id),
+    fecha_inicio TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP::timestamp(0)
+);
+
 CREATE TABLE rfid (
     num_serie VARCHAR(20) PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -25,8 +32,8 @@ CREATE TABLE metricas (
 CREATE TABLE vaciados (
     id_container INTEGER REFERENCES container(id),
     fecha_vaciado TIMESTAMP,
-    latitud_vaciado DOUBLE PRECISION NOT NULL,
-    longitud_vaciado DOUBLE PRECISION NOT NULL,
+    latitud_vaciado DOUBLE PRECISION,
+    longitud_vaciado DOUBLE PRECISION,
     peso_vaciado NUMERIC(10,2) NOT NULL,
     PRIMARY KEY (id_container, fecha_vaciado)
 );

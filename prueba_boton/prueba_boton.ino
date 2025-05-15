@@ -2,7 +2,7 @@ const int boton = 3;
 
 void setup() {
   pinMode(boton, INPUT_PULLUP);
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {

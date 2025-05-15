@@ -34,5 +34,16 @@ services:
                apt-get install -y php8.3 php8.3-pgsql libapache2-mod-php &&
                service apache2 restart && 
                tail -f /dev/null"
+  grafana_container:
+    image: grafana/grafana:11.0.0
+    container_name: grafana_container
+    environment:
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana_config:/etc/grafana
+    depends_on:
+      - db
 
       

@@ -1,6 +1,6 @@
 // Definições dos pinos
-const int trigPin = 9;
-const int echoPin = 10;
+const int trigPin = 11;
+const int echoPin = 12;
 
 void setup() {
   Serial.begin(115200);           // Inicializa a comunicação serial
