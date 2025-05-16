@@ -9,7 +9,7 @@ $password = "root"; // Tu contraseña de PostgreSQL
 $dbname = "arduino";        // El nombre de tu base de datos
 
 // Clave API de Google Maps para Geocoding
-$api_key = 'xxxx'; // Reemplaza con tu clave de API
+$api_key = 'xxx'; // Reemplaza con tu clave de API
 
 // Conexión a la base de datos PostgreSQL usando PDO
 try {
@@ -78,11 +78,16 @@ $conn = null;
                         </td>
                         <td><?php echo $contenedor['poblacion']; ?></td> <!-- Mostrar la fecha de último llenado -->
                         <td>
-                            <!-- Enlace para cambiar el estado del contenedor -->
-                            <a href="cambiar_estado.php?id=<?php echo $contenedor['id']; ?>" class="btn-cambiar-estado">
-    Cambiar Estado
-</a>
+                            <!-- Botón para cambiar estado -->
+                            <a href="cambiar_estado.php?id=<?php echo $contenedor['id']; ?>" class="btn-cambiar-estado">Cambiar Estado</a>
+
+                            <a href="ver_contenedor.php?id=<?php echo $contenedor['id']; ?>" 
+                            class="btn-cambiar-estado" 
+                            style="margin-left: 10px;">
+                            Ver en Mapa
+                            </a>
                         </td>
+
                     </tr>
                 <?php endforeach; ?>
             </tbody>

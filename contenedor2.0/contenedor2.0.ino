@@ -1,5 +1,4 @@
 #include <TinyGPS++.h>
-#include <SoftwareSerial.h>
 #include <SPI.h>
 #include <MFRC522.h>
 #include "HX711.h"
@@ -7,13 +6,20 @@
 #define SS_PIN 53 // Pin número 53 para el SS (SDA) del RC522
 #define RGB_GREEN 3
 #define RGB_BLUE 2
-#define RGB_RED 6
+#define RGB_RED 7
 int control;
 const int DOUT=A1;
 const int CLK=A0;
+const int PinIN1 = 35;
+const int PinIN2 = 37;
+const int boton = 27;
 HX711 balanza;
 String id_container = "1";
+//#define GPS_RX 38  // Conectar al TX del GPS
+//#define GPS_TX 39  // (opcional, normalmente no se usa)
 
+// Crear el puerto GPS
+//SoftwareSerial gpsSerial(GPS_RX, GPS_TX);
 TinyGPSPlus gps;
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Creem l’objete per a el RC522
 byte ActualUID[4]; // Emmagatzemarà codi únic llegit de la targeta
@@ -24,7 +30,11 @@ const int echoPin = 10;
 const int trigPin2 = 11;
 const int echoPin2 = 12;
 float pes;
+bool tieneCoordenadas;
 void setup() {
+  pinMode(boton, INPUT_PULLUP);
+  pinMode(PinIN1, OUTPUT);
+  pinMode(PinIN2, OUTPUT);
   pinMode (RGB_RED, OUTPUT);
   pinMode (RGB_GREEN, OUTPUT);
   pinMode (RGB_BLUE, OUTPUT);
@@ -39,7 +49,7 @@ void setup() {
   Serial.println("Arduino Mega listo.");
   SPI.begin(); // Iniciem el Bus SPI
   mfrc522.PCD_Init(); // Iniciem el MFRC522
-
+  //gpsSerial.begin(9600);
   balanza.begin(DOUT, CLK);
   Serial.print("Lectura del valor del ADC:  ");
   Serial.println(balanza.read());
@@ -49,33 +59,37 @@ void setup() {
   balanza.set_scale(12200); // Establecemos la escala
   balanza.tare(20);  //El peso actual es considerado Tara.
   Serial.println("Listo para pesar");
+  tieneCoordenadas = false;
 
   while (Serial1.available()) {
     char c = Serial1.read();
     gps.encode(c);
 
-   if (gps.location.isUpdated()) {
+    if (gps.location.isUpdated()) {
+      tieneCoordenadas = true;
+
       double lat = gps.location.lat();
       double lng = gps.location.lng();         
-      Serial.print("Latitud: ");
-      Serial.println(gps.location.lat(), 6);
 
+      Serial.print("Latitud: ");
+      Serial.println(lat, 6);
       Serial.print("Longitud: ");
-      Serial.println(gps.location.lng(), 6);
-      peticio="?lat=" + String(lat) + "&lng=" + String(lng) + "&id_container" + id_container;
-      // peticio="?lat=45.224152&lng=3.725570&id_container=2";
+      Serial.println(lng, 6);
+
+      peticio = "?lat=" + String(lat) + "&lng=" + String(lng) + "&id_container=" + id_container;
+
       resultat = enviar_i_rebre_dades(peticio);
       Serial.println(resultat);
+
       control = resultat.toInt();
       if (control == -1) {
-        // ACCESO DENEGADO
         Serial.println("FALLO EN EL INSERT LAT LONG");
-      } else if (control == 1){
+      } else if (control == 1) {
         Serial.println("REGISTRO ACTUALIZADO LAT LONG");
       }
-
     }
-}
+  }
+
 
   // Variable booleana para comparar si el container esta activo
   peticio="?comprovacio=1&id_container=" + id_container;
@@ -100,10 +114,6 @@ void setup() {
 }
 
 void loop() {
-  // digitalWrite(RGB_GREEN, LOW); 
-  // digitalWrite(RGB_BLUE, HIGH); 
-  // digitalWrite(RGB_RED, HIGH);
-  // delay(5000);
 
   // Sensor ultrasónico 1
   digitalWrite(trigPin, LOW);
@@ -128,8 +138,10 @@ void loop() {
   Serial.println(distance);
 
   if (distance >= 10.00 || distance2 >= 10.00){
-    
-
+    digitalWrite(RGB_GREEN, LOW); 
+    digitalWrite(RGB_BLUE, HIGH); 
+    digitalWrite(RGB_RED, HIGH);
+    delay(2000);
     if (activo != true) {
       // Construir consulta para actualizar el valor de false a true
       peticio="?activo=1&id_container=" + id_container;
@@ -183,6 +195,28 @@ void loop() {
       // ABRIR PUERTA
       // DELAY(30000)
       // CERRAR PUERTA
+      MotorHorario();
+      delay(20000);
+      Serial.println("PUERTA ABIERTA");
+      bool puertaAbierta = true;
+
+      while (puertaAbierta) {
+        if (digitalRead(boton) == LOW) {
+          Serial.println("Condición para cerrar puerta alcanzada");
+
+          MotorAntihorario();
+          delay(20000);
+          Serial.println("PUERTA CERRADA");
+
+          puertaAbierta = false;
+        }
+
+        delay(50);  // Evita sobrecargar el micro
+      }
+      
+      MotorStop();
+      Serial.println("Motor Detenido");
+      delay(1000);
       peticio += "&pes=";
       pes = balanza.get_units(20);
       peticio += String(pes, 2);
@@ -204,9 +238,40 @@ void loop() {
     }
   } else {
     Serial.println("DENEGADO222");
+    if (tieneCoordenadas != true) {
+      while (Serial1.available()) {
+        char c = Serial1.read();
+        gps.encode(c);
+
+        if (gps.location.isUpdated()) {
+          tieneCoordenadas = true;
+
+          double lat = gps.location.lat();
+          double lng = gps.location.lng();         
+
+          Serial.print("Latitud: ");
+          Serial.println(lat, 6);
+          Serial.print("Longitud: ");
+          Serial.println(lng, 6);
+
+          peticio = "?lat=" + String(lat) + "&lng=" + String(lng) + "&id_container=" + id_container;
+
+          resultat = enviar_i_rebre_dades(peticio);
+          Serial.println(resultat);
+
+          control = resultat.toInt();
+          if (control == -1) {
+            Serial.println("FALLO EN EL INSERT LAT LONG");
+          } else if (control == 1) {
+            Serial.println("REGISTRO ACTUALIZADO LAT LONG");
+          }
+        }
+      }
+    }
     digitalWrite(RGB_GREEN, HIGH); 
     digitalWrite(RGB_BLUE, HIGH); 
     digitalWrite(RGB_RED, LOW);
+    delay(2000);
     if (activo != false) {
       // Construir consulta para actualizar el valor de false a true
       peticio="?activo=0&id_container=" + id_container;
@@ -248,4 +313,23 @@ String enviar_i_rebre_dades(String peticio){
     resultat = Serial2.readStringUntil('\n');
   }
   return resultat;
+}
+//función para girar el motor en sentido horario
+void MotorHorario()
+{
+  digitalWrite (PinIN1, HIGH);
+  digitalWrite (PinIN2, LOW);
+}
+//función para girar el motor en sentido antihorario
+void MotorAntihorario()
+{
+  digitalWrite (PinIN1, LOW);
+  digitalWrite (PinIN2, HIGH);
+}
+
+//función para apagar el motor
+void MotorStop()
+{
+  digitalWrite (PinIN1, LOW);
+  digitalWrite (PinIN2, LOW);
 }

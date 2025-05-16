@@ -2,8 +2,8 @@
 #include <SoftwareSerial.h>
 
 // Pines para GPS con SoftwareSerial
-#define GPS_RX 10  // Conectar al TX del GPS
-#define GPS_TX 11  // (opcional, normalmente no se usa)
+#define GPS_RX 38  // Conectar al TX del GPS
+#define GPS_TX 39  // (opcional, normalmente no se usa)
 
 // Crear el puerto GPS
 SoftwareSerial gpsSerial(GPS_RX, GPS_TX);
@@ -11,8 +11,7 @@ TinyGPSPlus gps;
 
 void setup() {
   Serial.begin(115200);      // Monitor serial en la PC
-  gpsSerial.begin(9600);     // GPS por SoftwareSerial
-  Serial2.begin(9600);       // ESP32 conectado a Serial2 (Mega: RX2 = 17, TX2 = 16)
+  gpsSerial.begin(9600);       // ESP32 conectado a Serial2 (Mega: RX2 = 17, TX2 = 16)
 
   Serial.println("Iniciando prueba GPS (SoftwareSerial) + ESP32 (Serial2)...");
 }
@@ -22,6 +21,7 @@ void loop() {
   while (gpsSerial.available()) {
     char c = gpsSerial.read();         // Mostrar datos crudos del GPS
     gps.encode(c);
+    Serial.println("gps ok");
   }
 
   // Si hay nueva ubicación

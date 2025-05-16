@@ -1,14 +1,16 @@
-const int PinIN1 = 7;
-const int PinIN2 = 6;
- 
+const int PinIN1 = 35;
+const int PinIN2 = 37;
+
 void setup() {
   // inicializar la comunicación serial a 9600 bits por segundo:
   Serial.begin(115200);
   // configuramos los pines como salida
   pinMode(PinIN1, OUTPUT);
   pinMode(PinIN2, OUTPUT);
+  MotorAntihorario();
+  delay(20000);
 }
- 
+
 void loop() {
   
   MotorHorario();
@@ -21,10 +23,10 @@ void loop() {
   
   MotorStop();
   Serial.println("Motor Detenido");
-  delay(3000);
+  delay(20000);
   
 }
- 
+
 //función para girar el motor en sentido horario
 void MotorHorario()
 {
@@ -37,7 +39,7 @@ void MotorAntihorario()
   digitalWrite (PinIN1, LOW);
   digitalWrite (PinIN2, HIGH);
 }
- 
+
 //función para apagar el motor
 void MotorStop()
 {

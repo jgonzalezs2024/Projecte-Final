@@ -5,6 +5,18 @@ if (!$conector) {
     echo "ERROR: No se pudo conectar a PostgreSQL.";
     exit;
 }
+function poblacion_por_coordenadas($lat, $lng, $clave_api) {
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$clave_api&language=es";
+    $archivo = json_decode(file_get_contents($url), true);
+
+    foreach ($archivo['results'][0]['address_components'] as $elemento) {
+        if (in_array('locality', $elemento['types'])) {
+            return $elemento['long_name'];
+        }
+    }
+}
+$clave_api = 'xxx';
+
 if (isset($_GET['rfid']) && count($_GET) === 1){
     $uid = $_GET['rfid'];
     $consulta = "SELECT num_serie FROM rfid WHERE num_serie = '$uid'";
@@ -60,9 +72,15 @@ else if (isset($_GET['comprovacio'], $_GET['id_container'])) {
     $id_container = (int)$_GET['id_container'];
     $lat = (double)$_GET['lat']; 
     $lng = (double)$_GET['lng']; 
-    $query = "UPDATE container SET latitud_actual = $lat, longitud_actual = $lng WHERE id = $id_container";
+
+    $poblacion = poblacion_por_coordenadas($lat, $lng, $clave_api);
+    if (!$poblacion) {
+        $poblacion = "Desconocida";
+    }
+
+    $query = "UPDATE container SET latitud_actual = $lat, longitud_actual = $lng, poblacion = '$poblacion' WHERE id = $id_container";
     $resultado = pg_query($conector, $query);
-    // var_dump($query);
+
     if ($resultado) {
         echo "1";
     } else {

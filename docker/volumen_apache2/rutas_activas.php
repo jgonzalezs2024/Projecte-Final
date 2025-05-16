@@ -12,22 +12,40 @@ try {
     die("Conexión fallida: " . $e->getMessage());
 }
 
-// Consulta para obtener rutas agrupadas con tipos de contenedor concatenados
+// Consulta básica, sin agrupación, para obtener todos los registros
 $sql = "
-    SELECT 
-        ra.id_ruta,
-        STRING_AGG(DISTINCT c.tipo, ', ') AS tipos_contenedores,
-        MIN(ra.fecha_inicio) AS fecha_inicio -- fecha más temprana de la ruta
-    FROM rutas_activas ra
-    JOIN container c ON ra.id_contenedor = c.id
-    GROUP BY ra.id_ruta
-    ORDER BY ra.id_ruta
+SELECT 
+    ra.id_ruta,
+    c.tipo,
+    ra.fecha_inicio
+FROM rutas_activas ra
+JOIN container c ON ra.id_contenedor = c.id
+ORDER BY ra.id_ruta;
 ";
 
 $stmt = $conn->query($sql);
-$rutas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $conn = null;
+
+// Agrupar datos por id_ruta en PHP
+$rutas = [];
+foreach ($rows as $row) {
+    $id = $row['id_ruta'];
+    if (!isset($rutas[$id])) {
+        $rutas[$id] = [
+            'tipos' => [],
+            'fecha_inicio' => $row['fecha_inicio'],
+        ];
+    }
+    // Guardar fecha mínima
+    if ($row['fecha_inicio'] < $rutas[$id]['fecha_inicio']) {
+        $rutas[$id]['fecha_inicio'] = $row['fecha_inicio'];
+    }
+    // Guardar tipos únicos
+    if (!in_array($row['tipo'], $rutas[$id]['tipos'])) {
+        $rutas[$id]['tipos'][] = $row['tipo'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -64,21 +82,22 @@ $conn = null;
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($rutas as $ruta): ?>
-                    <tr style="cursor:pointer;" onclick="window.location.href='ver_ruta.php?id_ruta=<?php echo $ruta['id_ruta']; ?>'">
-                        <td><?php echo htmlspecialchars($ruta['id_ruta']); ?></td>
-                        <td><?php echo htmlspecialchars($ruta['tipos_contenedores']); ?></td>
-                        <td><?php echo htmlspecialchars($ruta['fecha_inicio']); ?></td>
-                        <td>
-                        <form method="POST" action="eliminar_ruta.php" onsubmit="return confirm('¿Seguro que quieres eliminar la ruta <?php echo $ruta['id_ruta']; ?>?');" onclick="event.stopPropagation();">
-                            <input type="hidden" name="id_ruta" value="<?php echo $ruta['id_ruta']; ?>">
-                            <button type="submit" class="btn-cambiar-estado">Eliminar Ruta</button>
-                        </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
                 <?php if(empty($rutas)): ?>
                     <tr><td colspan="4">No hay rutas activas</td></tr>
+                <?php else: ?>
+                    <?php foreach ($rutas as $id_ruta => $data): ?>
+                        <tr style="cursor:pointer;" onclick="window.location.href='ver_ruta.php?id_ruta=<?php echo htmlspecialchars($id_ruta); ?>'">
+                            <td><?php echo htmlspecialchars($id_ruta); ?></td>
+                            <td><?php echo htmlspecialchars(implode(', ', $data['tipos'])); ?></td>
+                            <td><?php echo htmlspecialchars($data['fecha_inicio']); ?></td>
+                            <td>
+                                <form method="POST" action="eliminar_ruta.php" onsubmit="return confirm('¿Seguro que quieres eliminar la ruta <?php echo htmlspecialchars($id_ruta); ?>?');" onclick="event.stopPropagation();">
+                                    <input type="hidden" name="id_ruta" value="<?php echo htmlspecialchars($id_ruta); ?>">
+                                    <button type="submit" class="btn-cambiar-estado">Eliminar Ruta</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>

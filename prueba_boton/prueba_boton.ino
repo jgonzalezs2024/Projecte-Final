@@ -1,4 +1,4 @@
-const int boton = 3;
+const int boton = 27;
 
 void setup() {
   pinMode(boton, INPUT_PULLUP);

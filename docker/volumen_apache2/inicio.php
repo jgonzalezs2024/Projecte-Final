@@ -31,9 +31,13 @@ $contenedores_activos = $result_activos->fetch(PDO::FETCH_ASSOC)['contenedores_a
 $total_usuarios = $result_usuarios->fetch(PDO::FETCH_ASSOC)['total_usuarios'];
 
 // Consultar los contenedores inactivos
-$sql_inactivos = "SELECT COUNT(*) AS contenedores_inactivos FROM container WHERE activo = 'f'";
-$result_inactivos = $conn->query($sql_inactivos);
-$contenedores_inactivos = $result_inactivos->fetch(PDO::FETCH_ASSOC)['contenedores_inactivos'];
+// $sql_inactivos = "SELECT COUNT(*) AS contenedores_inactivos FROM container WHERE activo = 'f'";
+// $result_inactivos = $conn->query($sql_inactivos);
+// $contenedores_inactivos = $result_inactivos->fetch(PDO::FETCH_ASSOC)['contenedores_inactivos'];
+
+$sql_rutas_activas = "SELECT COUNT(DISTINCT id_ruta) AS total_rutas_activas FROM rutas_activas";
+$result_rutas_activas = $conn->query($sql_rutas_activas);
+$total_rutas_activas = $result_rutas_activas->fetch(PDO::FETCH_ASSOC)['total_rutas_activas'];
 
 $conn = null;
 ?>
@@ -75,13 +79,15 @@ $conn = null;
                     <p><?php echo $contenedores_activos; ?></p>
                 </div>
                 <div class="info-box">
-                    <h3>Contenedores Inactivos</h3>
-                    <p><?php echo $contenedores_inactivos; ?></p>
+                    <h3>Rutas Activas</h3>
+                    <p><?php echo $total_rutas_activas; ?></p>
                 </div>
                 <div class="info-box">
                     <h3>Total de Usuarios</h3>
                     <p><?php echo $total_usuarios; ?></p>
                 </div>
+
+
             </div>
         </section>
     </main>

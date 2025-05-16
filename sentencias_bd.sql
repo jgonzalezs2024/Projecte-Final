@@ -1,9 +1,10 @@
 CREATE TABLE container (
     id SERIAL PRIMARY KEY,
-    tipo VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50),
     activo BOOLEAN NOT NULL DEFAULT true,
     longitud_actual DOUBLE PRECISION,
-    latitud_actual DOUBLE PRECISION
+    latitud_actual DOUBLE PRECISION,
+    poblacion VARCHAR(100)
 );
 
 CREATE TABLE rutas_activas (

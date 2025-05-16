@@ -210,3 +210,38 @@ footer {
         gap: 10px;
     }
 }
+/* Etiquetas de tipo de contenedor */
+.tag {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-transform: capitalize;
+}
+
+/* Estilos por tipo */
+.tag-vidrio {
+    background-color: #4f8a8b;
+}
+
+.tag-organico {
+    background-color: #8bc34a;
+}
+
+.tag-plastico {
+    background-color: #f4a261;
+}
+
+.tag-metal {
+    background-color: #6c757d;
+}
+
+.tag-papel {
+    background-color: #2196f3;
+}
+
+.tag-otro {
+    background-color: #9c27b0;
+}

@@ -13,7 +13,7 @@ Inventario:
 16 MACHO HEMBRA
 
 
-ULTRASONICOS >> OK 8 mACHOS-HEMBRA  desde ardduino directo a ultrasonico
+ULTRASONICOS >> OK 8 MACHOS-HEMBRA  desde ardduino directo a ultrasonico
 RFID + LED + GPS >> OK    11 MACHO-MACHO desde arduino a la PROTO (LED, RFID) 4 MACHOS-HEMBRA DIrecto arduino a GPS 4 macho-hembra desde proto a LED
 
 

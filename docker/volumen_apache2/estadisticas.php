@@ -30,8 +30,7 @@
         <section class="estadistica-seccion">
             <h3>Estadísticas de Contenedores</h3>
             <div class="grafica">
-                <iframe src="http://localhost:3000/d-solo/belyc4qos92bka/new-dashboard?orgId=1&from=1747285130528&to=1747306730528&panelId=1" width="450" height="200" frameborder="0"></iframe>
-                
+            <iframe src="http://localhost:3000/d-solo/belyc4qos92bka/new-dashboard?orgId=1&from=1747323421352&to=1747345021352&panelId=1" width="450" height="200" frameborder="0"></iframe>                
             </div>
 
         </section>
