@@ -49,14 +49,13 @@ void setup() {
   Serial.println("Arduino Mega listo.");
   SPI.begin(); // Iniciem el Bus SPI
   mfrc522.PCD_Init(); // Iniciem el MFRC522
-  //gpsSerial.begin(9600);
   balanza.begin(DOUT, CLK);
   Serial.print("Lectura del valor del ADC:  ");
   Serial.println(balanza.read());
   Serial.println("No ponga ningun  objeto sobre la balanza");
   Serial.println("Destarando...");
   Serial.println("...");
-  balanza.set_scale(12200); // Establecemos la escala
+  balanza.set_scale(-40000); // Establecemos la escala
   balanza.tare(20);  //El peso actual es considerado Tara.
   Serial.println("Listo para pesar");
   tieneCoordenadas = false;
@@ -237,6 +236,9 @@ void loop() {
       delay(500);
     }
   } else {
+    digitalWrite(RGB_GREEN, HIGH); 
+    digitalWrite(RGB_BLUE, HIGH); 
+    digitalWrite(RGB_RED, LOW);
     Serial.println("DENEGADO222");
     if (tieneCoordenadas != true) {
       while (Serial1.available()) {
@@ -268,9 +270,6 @@ void loop() {
         }
       }
     }
-    digitalWrite(RGB_GREEN, HIGH); 
-    digitalWrite(RGB_BLUE, HIGH); 
-    digitalWrite(RGB_RED, LOW);
     delay(2000);
     if (activo != false) {
       // Construir consulta para actualizar el valor de false a true
