@@ -21,7 +21,6 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
     $uid = $_GET['rfid'];
     $consulta = "SELECT num_serie FROM rfid WHERE num_serie = '$uid'";
     $resultado = pg_query($conector, $consulta);
-
     if ($resultado && $registro = pg_fetch_assoc($resultado)) {
         echo "1";
     } else {
@@ -35,13 +34,11 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
               VALUES ($id_container, $pes, NOW()::TIMESTAMP(0), '$uid')";
     // var_dump($query);
     $resultado = pg_query($conector, $query);
-    
     if ($resultado) {
         echo "1";
     } else {
         echo "-1";
     }
-    
 }
 //  else if (isset($_GET['activo'], $_GET['id_container'])) {
 //     $id_container = (int)$_GET['id_container'];
@@ -131,16 +128,9 @@ else if (isset($_GET['comprovacio'], $_GET['id_container'])) {
                             $id_contenedor = $id_registro['id'];
                             $insert_rutas = "INSERT INTO rutas_activas (id_ruta, id_contenedor) VALUES ($nuevo_id_ruta, $id_contenedor)";
                             $respuesta_insert_rutas = pg_query($conector, $insert_rutas);
-                            if (!$respuesta_insert_rutas) {
-                                echo "Error al insertar en rutas_activas para el contenedor ID: $id_contenedor";
-                            }
                         }
-                    } else {
-                        echo "Error obteniendo los IDs de contenedores inactivos.";
                     }
                 }
-            } else {
-                echo "No hay contenedores suficientes para crear una ruta";
             }
         }
     } else {

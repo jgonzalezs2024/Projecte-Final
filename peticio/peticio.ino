@@ -49,15 +49,10 @@ void setup() {
 
 void loop() {
   if (Serial2.available()) {
-    // Leer el mensaje enviado por el Arduino
     String msg = Serial2.readStringUntil('\n');
-    msg.trim();  // Limpia caracteres de nueva línea o espacios
+    msg.trim();
     Serial.println(msg);
-
-
-    // Construir la URL con el valor recibido
     url = serverName + msg;
-
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
       http.begin(url);
@@ -65,20 +60,14 @@ void loop() {
       if (httpResponseCode == 200) {
         String payload = http.getString();
         Serial.print("Respuesta HTTP: ");
-        Serial.println(payload);
-
-        // Enviar la respuesta al Arduino por Serial2
         Serial2.println(payload);
       } else {
         Serial.print("Error HTTP: ");
         Serial.println(httpResponseCode);
       }
-
       http.end();
     } else {
-      Serial.println("WiFi no conectado");
       Serial2.println("WiFi no conectado");
     }
   }
-
 }

@@ -160,9 +160,7 @@ void loop() {
     prova = true;
     while (prova){
       if (mfrc522.PICC_IsNewCardPresent()) {
-        // Seleccionem una targeta
         if (mfrc522.PICC_ReadCardSerial()) {
-            // Enviem serialement el seu UID
             String uidString = "?rfid=";
             for (byte i = 0; i < mfrc522.uid.size; i++) {
                 if (mfrc522.uid.uidByte[i] < 0x10) {

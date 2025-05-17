@@ -218,17 +218,16 @@ void loop() {
       }
     }
 
-    abrirTapa();
-    delay(15000);
-    Serial.println("Tapa abierta");
-    tiempoInicio = millis();
-    while (digitalRead(boton) == HIGH && (millis() - tiempoInicio) < tiempoLimite) {
-      delay(50);  // Añadimos un pequeño retraso para evitar saturar el micro
-    }
+    unsigned long inicio = millis();
 
-    Serial.println("Cerrando tapa");
-    cerrarTapa();
-    delay(15000);  // Esperamos un momento antes de repetir el proceso
+    while (puertaAbierta) {
+      if (digitalRead(boton) == LOW || millis() - inicio >= 300000) {
+        MotorAntihorario();
+        delay(20000);
+        Serial.println("PUERTA CERRADA");
+        puertaAbierta = false;
+      }
+    }
 
     peticio += "&pes=";
     pes = balanza.get_units(20);
