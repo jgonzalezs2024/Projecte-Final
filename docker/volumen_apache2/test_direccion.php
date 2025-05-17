@@ -5,7 +5,6 @@ error_reporting(E_ALL);
 function obtenerCalleYNumero($lat, $lng, $apiKey) {
     $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$apiKey&language=es";
 
-    // Inicializar cURL
     $ch = curl_init();
 
     // Configurar opciones de cURL

@@ -1,34 +1,27 @@
 <?php
-// Datos de conexión a PostgreSQL
-$servername = "db";    // O la dirección IP de tu servidor PostgreSQL
-$username = "root";    // Tu usuario de PostgreSQL
-$password = "root"; // Tu contraseña de PostgreSQL
-$dbname = "arduino";        // El nombre de tu base de datos
+include('funciones.php');
+$conexion = conectar_base_de_datos();
 
-try {
-    $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Conexión fallida: " . $e->getMessage();
-    exit;
+$consulta_usuarios = "SELECT num_serie, nombre, apellido, fecha_nacimiento FROM rfid";
+$resultado = pg_query($conexion, $consulta_usuarios);
+$usuarios = [];
+while ($fila = pg_fetch_assoc($resultado)) {
+    $usuarios[] = $fila;
 }
-
-// Consulta de usuarios
-$sql_usuarios = "SELECT num_serie, nombre, apellido, fecha_nacimiento FROM rfid";
-$stmt = $conn->query($sql_usuarios);
-$usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+pg_close($conexion);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración - Usuarios</title>
+    <title>Usuarios</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Panel de Administración - Usuarios</h1>
+            <h1>Usuarios</h1>
             <nav>
                 <ul>
                     <li><a href="inicio.php">Inicio</a></li>

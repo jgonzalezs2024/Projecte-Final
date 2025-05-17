@@ -1,33 +1,38 @@
 <?php
-$servername = "db";
-$username = "root";
-$password = "root";
-$dbname = "arduino";
-
-try {
-    $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
-} catch (PDOException $e) {
-    echo "Conexión fallida: " . $e->getMessage();
-}
+include('funciones.php');
+$conexion = conectar_base_de_datos();
 
 $consulta_container = "SELECT COUNT(*) AS total_contenedores FROM container";
+$resultado_container = pg_query($conexion, $consulta_container);
+$total_contenedores = 0;
+if ($fila = pg_fetch_assoc($resultado_container)) {
+    $total_contenedores = $fila['total_contenedores'];
+}
+
 $consulta_container_activos = "SELECT COUNT(*) AS contenedores_activos FROM container WHERE activo = 't'";
+$resultado_container_activos = pg_query($conexion, $consulta_container_activos);
+$contenedores_activos = 0;
+if ($fila = pg_fetch_assoc($resultado_container_activos)) {
+    $contenedores_activos = $fila['contenedores_activos'];
+}
+
 $consulta_total_usuarios = "SELECT COUNT(*) AS total_usuarios FROM rfid";
-
-$resultado_container = $conn->query($consulta_container);
-$resultado_container_activos = $conn->query($consulta_container_activos);
-$resultado_total_usuarios = $conn->query($consulta_total_usuarios);
-
-$total_contenedores = $resultado_container->fetch(PDO::FETCH_ASSOC)['total_contenedores'];
-$contenedores_activos = $resultado_container_activos->fetch(PDO::FETCH_ASSOC)['contenedores_activos'];
-$total_usuarios = $resultado_total_usuarios->fetch(PDO::FETCH_ASSOC)['total_usuarios'];
+$resultado_total_usuarios = pg_query($conexion, $consulta_total_usuarios);
+$total_usuarios = 0;
+if ($fila = pg_fetch_assoc($resultado_total_usuarios)) {
+    $total_usuarios = $fila['total_usuarios'];
+}
 
 $consulta_rutas_activas = "SELECT COUNT(DISTINCT id_ruta) AS total_rutas_activas FROM rutas_activas";
-$resultado_rutas_activas = $conn->query($consulta_rutas_activas);
-$total_rutas_activas = $resultado_rutas_activas->fetch(PDO::FETCH_ASSOC)['total_rutas_activas'];
+$resultado_rutas_activas = pg_query($conexion, $consulta_rutas_activas);
+$total_rutas_activas = 0;
+if ($fila = pg_fetch_assoc($resultado_rutas_activas)) {
+    $total_rutas_activas = $fila['total_rutas_activas'];
+}
 
-$conn = null;
+pg_close($conexion);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -40,7 +45,7 @@ $conn = null;
 <body>
     <header>
         <div class="container">
-            <h1>Panel de Administración</h1>
+            <h1>Administración</h1>
             <nav>
                 <ul>
                     <li><a href="contenedores.php">Contenedores</a></li>

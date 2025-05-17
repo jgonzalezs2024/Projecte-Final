@@ -1,50 +1,33 @@
 <?php
-$servername = "db";
-$username = "root";
-$password = "root";
-$dbname = "arduino";
+include('funciones.php');
+$conexion = conectar_base_de_datos();
 
-$api_key = 'xxx';
-
-try {
-    $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Conexión fallida: " . $e->getMessage());
-}
-
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($id <= 0) {
-    die("ID de contenedor inválido");
-}
-
-$sql = "SELECT id, tipo, latitud_actual, longitud_actual FROM container WHERE id = :id";
-$stmt = $conn->prepare($sql);
-$stmt->execute(['id' => $id]);
-$contenedor = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$contenedor) {
-    die("Contenedor no encontrado");
-}
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$consulta = "SELECT id, tipo, latitud_actual, longitud_actual FROM container WHERE id = $1";
+$resultado = pg_query_params($conexion, $consulta, [$id]);
+$contenedor = pg_fetch_assoc($resultado);
 
 $lat = $contenedor['latitud_actual'];
 $lng = $contenedor['longitud_actual'];
-$map_url = "https://www.google.com/maps/embed/v1/place?key=$api_key&q=$lat,$lng";
 
-// Obtener la última fecha de vaciado
-$sql_vaciado = "SELECT fecha_vaciado FROM vaciados WHERE id_container = :id ORDER BY fecha_vaciado DESC LIMIT 1";
-$stmt_vaciado = $conn->prepare($sql_vaciado);
-$stmt_vaciado->execute(['id' => $id]);
-$vaciado = $stmt_vaciado->fetch(PDO::FETCH_ASSOC);
+$clave_api = "xxx";
+$map_url = "https://www.google.com/maps/embed/v1/place?key=$clave_api&q=$lat,$lng";
+$consulta_vaciado = "SELECT fecha_vaciado FROM vaciados WHERE id_container = $1 ORDER BY fecha_vaciado DESC LIMIT 1";
+$resultado_vaciado = pg_query_params($conexion, $consulta_vaciado, [$id]);
+$vaciado = pg_fetch_assoc($resultado_vaciado);
+
 $ultima_fecha_vaciado = $vaciado ? date("d/m/Y H:i", strtotime($vaciado['fecha_vaciado'])) : "Sin registro";
+
+pg_close($conexion);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Contenedor #<?php echo htmlspecialchars($contenedor['id']); ?></title>
+    <title>Contenedor</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
         .map-box {
@@ -74,7 +57,7 @@ $ultima_fecha_vaciado = $vaciado ? date("d/m/Y H:i", strtotime($vaciado['fecha_v
 <body>
     <header>
         <div class="container">
-            <h1>Contenedor - Mapa</h1>
+            <h1>Mapa</h1>
             <nav>
                 <ul>
                     <li><a href="inicio.php">Inicio</a></li>
@@ -103,8 +86,8 @@ $ultima_fecha_vaciado = $vaciado ? date("d/m/Y H:i", strtotime($vaciado['fecha_v
         <tr>
             <td><?php echo htmlspecialchars($contenedor['id']); ?></td>
             <td>
-                <span class="tag tag-<?php echo strtolower(htmlspecialchars($contenedor['tipo'])); ?>">
-                    <?php echo ucfirst(htmlspecialchars($contenedor['tipo'])); ?>
+                <span>
+                    <?php echo htmlspecialchars($contenedor['tipo']); ?>
                 </span>
             </td>
             <td><?php echo $ultima_fecha_vaciado; ?></td>

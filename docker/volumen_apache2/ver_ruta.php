@@ -1,62 +1,56 @@
 <?php
-$servername = "db";
-$username = "root";
-$password = "root";
-$dbname = "arduino";
+include('funciones.php');
+$conexion = conectar_base_de_datos();
 
-try {
-    $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Conexión fallida: " . $e->getMessage());
-}
-
-$id_ruta = isset($_GET['id_ruta']) ? intval($_GET['id_ruta']) : 0;
-
-if ($id_ruta <= 0) {
-    die("ID de ruta inválido");
-}
-
+$id_ruta = isset($_GET['id_ruta']);
 $sql = "
-    SELECT c.id, c.tipo, c.latitud_actual, c.longitud_actual
-    FROM rutas_activas ra
-    JOIN container c ON ra.id_contenedor = c.id
-    WHERE ra.id_ruta = :id_ruta
-    ORDER BY ra.id ASC
+    SELECT 
+        container.id, 
+        container.tipo, 
+        container.latitud_actual, 
+        container.longitud_actual
+    FROM rutas_activas
+    JOIN container ON rutas_activas.id_contenedor = container.id
+    WHERE rutas_activas.id_ruta = $1
+    ORDER BY rutas_activas.id ASC
 ";
 
-$stmt = $conn->prepare($sql);
-$stmt->execute(['id_ruta' => $id_ruta]);
-$contenedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-if (!$contenedores) {
-    die("No se encontraron contenedores para esta ruta");
+$resultado = pg_query_params($conexion, $sql, [$id_ruta]);
+$contenedores = [];
+while ($fila = pg_fetch_assoc($resultado)) {
+    $contenedores[] = $fila;
 }
 
-$origin = $contenedores[0]['latitud_actual'] . ',' . $contenedores[0]['longitud_actual'];
-$destination = end($contenedores)['latitud_actual'] . ',' . end($contenedores)['longitud_actual'];
+$origen = $contenedores[0]['latitud_actual'] . ',' . $contenedores[0]['longitud_actual'];
+$destinacion = end($contenedores)['latitud_actual'] . ',' . end($contenedores)['longitud_actual'];
 
-$waypoints = [];
+$destinos = [];
 if (count($contenedores) > 2) {
     for ($i = 1; $i < count($contenedores) - 1; $i++) {
-        $waypoints[] = $contenedores[$i]['latitud_actual'] . ',' . $contenedores[$i]['longitud_actual'];
+        $destinos[] = $contenedores[$i]['latitud_actual'] . ',' . $contenedores[$i]['longitud_actual'];
     }
 }
 
-$waypoints_str = implode('|', $waypoints);
-
-// URL para embebido en iframe
-$map_url = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk&origin=$origin&destination=$destination";
-if ($waypoints_str) {
-    $map_url .= "&waypoints=" . urlencode($waypoints_str);
+$destinos_string = '';
+foreach ($destinos as $destino) {
+    $destinos_string .= $destino . '|';
 }
+$destinos_string = rtrim($destinos_string, '|');
+
+$url_maps = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk&origin=$origen&destination=$destinacion";
+if ($destinos_string) {
+    $url_maps .= "&waypoints=" . urlencode($destinos_string);
+}
+
+pg_close($conexion);
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ver Ruta <?php echo htmlspecialchars($id_ruta); ?></title>
+    <title>Ver Ruta</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
         .map-box {
@@ -96,7 +90,7 @@ if ($waypoints_str) {
         <h2>Mapa de la Ruta</h2>
         <div class="map-box">
             <iframe
-                src="<?php echo htmlspecialchars($map_url); ?>"
+                src="<?php echo htmlspecialchars($url_maps); ?>"
                 allowfullscreen
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade">

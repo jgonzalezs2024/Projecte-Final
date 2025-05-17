@@ -1,20 +1,11 @@
 <?php
-//$conector = mysqli_connect("localhost", "root", "root", "arduino_db", "5432");
+include('funciones.php');
 $conector = pg_connect("host=db port=5432 dbname=arduino user=root password=root");
 if (!$conector) {
     echo "ERROR: No se pudo conectar a PostgreSQL.";
     exit;
 }
-function poblacion_por_coordenadas($lat, $lng, $clave_api) {
-    $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$clave_api&language=es";
-    $archivo = json_decode(file_get_contents($url), true);
 
-    foreach ($archivo['results'][0]['address_components'] as $elemento) {
-        if (in_array('locality', $elemento['types'])) {
-            return $elemento['long_name'];
-        }
-    }
-}
 $clave_api = 'xxx';
 
 if (isset($_GET['rfid']) && count($_GET) === 1){
@@ -39,20 +30,7 @@ if (isset($_GET['rfid']) && count($_GET) === 1){
     } else {
         echo "-1";
     }
-}
-//  else if (isset($_GET['activo'], $_GET['id_container'])) {
-//     $id_container = (int)$_GET['id_container'];
-//     $activo = ($_GET['activo'] == 1) ? 'true' : 'false';
-//     $query = "UPDATE container SET activo = $activo WHERE id = $id_container";
-//     $resultado = pg_query($conector, $query);
-//     // var_dump($query);
-//     if ($resultado) {
-//         echo "1";
-//     } else {
-//         echo "-1";
-//     }
-// } 
-else if (isset($_GET['comprovacio'], $_GET['id_container'])) {
+} else if (isset($_GET['comprovacio'], $_GET['id_container'])) {
     $id_container = (int)$_GET['id_container'];
     $activo = ($_GET['comprovacio'] == 1) ? 'true' : 'false';
     $query = "SELECT activo FROM container WHERE id = $id_container";
