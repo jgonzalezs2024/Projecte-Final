@@ -1,36 +1,38 @@
+// DEFINICION DE LIBRERIAS //
+
 #include <TinyGPS++.h>
 #include <SPI.h>
 #include <MFRC522.h>
 #include "HX711.h"
-#define RST_PIN 5 // Pin número 5 para el RST del RC522
-#define SS_PIN 53 // Pin número 53 para el SS (SDA) del RC522
+
+
+#define RST_PIN 5
+#define SS_PIN 53
 #define RGB_GREEN 3
 #define RGB_BLUE 2
 #define RGB_RED 7
-int control;
 const int DOUT=A1;
 const int CLK=A0;
 const int PinIN1 = 35;
 const int PinIN2 = 37;
 const int boton = 27;
-HX711 balanza;
-String id_container = "1";
-//#define GPS_RX 38  // Conectar al TX del GPS
-//#define GPS_TX 39  // (opcional, normalmente no se usa)
-
-// Crear el puerto GPS
-//SoftwareSerial gpsSerial(GPS_RX, GPS_TX);
-TinyGPSPlus gps;
-MFRC522 mfrc522(SS_PIN, RST_PIN); // Creem l’objete per a el RC522
-byte ActualUID[4]; // Emmagatzemarà codi únic llegit de la targeta
-String peticio, resultat, consulta;
-bool prova, activo ;
 const int trigPin = 9;
 const int echoPin = 10;
 const int trigPin2 = 11;
 const int echoPin2 = 12;
-float pes;
-bool tieneCoordenadas;
+bool uidValido, activo, tieneCoordenadas, puertaAbierta;
+float pes, distance, distance2;
+int control;
+long duration, duration2;
+double lat, lng;
+char c;
+HX711 balanza;
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+String id_container = "1";
+TinyGPSPlus gps;
+byte ActualUID[4];
+String peticio, resultat;
+
 void setup() {
   pinMode(boton, INPUT_PULLUP);
   pinMode(PinIN1, OUTPUT);
@@ -58,17 +60,17 @@ void setup() {
   balanza.set_scale(-40000); // Establecemos la escala
   balanza.tare(20);  //El peso actual es considerado Tara.
   Serial.println("Listo para pesar");
-  tieneCoordenadas = false;
 
+  tieneCoordenadas = false;
   while (Serial1.available()) {
-    char c = Serial1.read();
+    c = Serial1.read();
     gps.encode(c);
 
     if (gps.location.isUpdated()) {
       tieneCoordenadas = true;
 
-      double lat = gps.location.lat();
-      double lng = gps.location.lng();         
+      lat = gps.location.lat();
+      lng = gps.location.lng();         
 
       Serial.print("Latitud: ");
       Serial.println(lat, 6);
@@ -88,9 +90,6 @@ void setup() {
       }
     }
   }
-
-
-  // Variable booleana para comparar si el container esta activo
   peticio="?comprovacio=1&id_container=" + id_container;
   resultat = enviar_i_rebre_dades(peticio);
   resultat.trim();
@@ -120,8 +119,8 @@ void loop() {
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  long duration = pulseIn(echoPin, HIGH);
-  float distance = duration * 0.034 / 2;
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
 
   // Sensor ultrasónico 2
   digitalWrite(trigPin2, LOW);
@@ -129,12 +128,8 @@ void loop() {
   digitalWrite(trigPin2, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin2, LOW);
-  long duration2 = pulseIn(echoPin2, HIGH);
-  float distance2 = duration2 * 0.034 / 2;
-
-  // Test por pantalla
-  Serial.println(distance2);
-  Serial.println(distance);
+  duration2 = pulseIn(echoPin2, HIGH);
+  distance2 = duration2 * 0.034 / 2;
 
   if (distance >= 10.00 || distance2 >= 10.00){
     digitalWrite(RGB_GREEN, LOW); 
@@ -157,8 +152,9 @@ void loop() {
     Serial.println("PERMITIDO");
     Serial.println("Lectura i accés del UID");
     delay(2000);
-    prova = true;
-    while (prova){
+
+    uidValido = false;
+    while (uidValido == false){
       if (mfrc522.PICC_IsNewCardPresent()) {
         if (mfrc522.PICC_ReadCardSerial()) {
             String uidString = "?rfid=";
@@ -171,7 +167,7 @@ void loop() {
                 uidString += String(mfrc522.uid.uidByte[i], HEX);
             }
             peticio=uidString;
-            prova = false;
+            uidValido = true;
             mfrc522.PICC_HaltA();
         }
       }
@@ -192,16 +188,16 @@ void loop() {
       // ABRIR PUERTA
       // DELAY(30000)
       // CERRAR PUERTA
-      MotorHorario();
+      levantarTapa();
       delay(20000);
       Serial.println("PUERTA ABIERTA");
-      bool puertaAbierta = true;
+      puertaAbierta = true;
 
       while (puertaAbierta) {
         if (digitalRead(boton) == LOW) {
           Serial.println("Condición para cerrar puerta alcanzada");
 
-          MotorAntihorario();
+          cerrarTapa();
           delay(20000);
           Serial.println("PUERTA CERRADA");
 
@@ -211,7 +207,7 @@ void loop() {
         delay(50);  // Evita sobrecargar el micro
       }
       
-      MotorStop();
+      pararMotor();
       Serial.println("Motor Detenido");
       delay(1000);
       peticio += "&pes=";
@@ -240,14 +236,14 @@ void loop() {
     Serial.println("DENEGADO222");
     if (tieneCoordenadas != true) {
       while (Serial1.available()) {
-        char c = Serial1.read();
+        c = Serial1.read();
         gps.encode(c);
 
         if (gps.location.isUpdated()) {
           tieneCoordenadas = true;
 
-          double lat = gps.location.lat();
-          double lng = gps.location.lng();         
+          lat = gps.location.lat();
+          lng = gps.location.lng();         
 
           Serial.print("Latitud: ");
           Serial.println(lat, 6);
@@ -311,21 +307,21 @@ String enviar_i_rebre_dades(String peticio){
   }
   return resultat;
 }
-//función para girar el motor en sentido horario
-void MotorHorario()
+//función para levantar la tapa
+void levantarTapa()
 {
   digitalWrite (PinIN1, HIGH);
   digitalWrite (PinIN2, LOW);
 }
-//función para girar el motor en sentido antihorario
-void MotorAntihorario()
+//función para bajar la tapa
+void cerrarTapa()
 {
   digitalWrite (PinIN1, LOW);
   digitalWrite (PinIN2, HIGH);
 }
 
 //función para apagar el motor
-void MotorStop()
+void pararMotor()
 {
   digitalWrite (PinIN1, LOW);
   digitalWrite (PinIN2, LOW);

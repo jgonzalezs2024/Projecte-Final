@@ -1,17 +1,35 @@
 <?php
 include('funciones.php');
+
+// ==============================================
+// CONEXIÓN A LA BASE DE DATOS
+// ==============================================
 $conexion = conectar_base_de_datos();
-$consulta_contenedores = "SELECT id, tipo, latitud_actual, longitud_actual, activo, poblacion FROM container";
+
+// ==============================================
+// OBTENER LISTADO DE CONTENEDORES
+// ==============================================
+$consulta_contenedores = "SELECT id, tipo, latitud_actual, longitud_actual, activo, poblacion FROM container ORDER BY id";
 $resultado_contenedores = pg_query($conexion, $consulta_contenedores);
+
 $contenedores = [];
+
 if ($resultado_contenedores) {
+    // Recorre todos los contenedores y los almacena en un array
     while ($contenedor = pg_fetch_assoc($resultado_contenedores)) {
         $contenedores[] = $contenedor;
     }
 }
+
+// Cierra la conexión a la base de datos
 pg_close($conexion);
-$clave_api = "xxx"
+
+// ==============================================
+// CLAVE API
+// ==============================================
+$clave_api = "xxx";
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -49,18 +67,26 @@ $clave_api = "xxx"
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($contenedores as $contenedor): 
+                <?php foreach ($contenedores as $contenedor):
+                    // Obtiene la dirección legible (calle y número) a partir de latitud y longitud
                     $direccion = obtenerCalleYNumero($contenedor['latitud_actual'], $contenedor['longitud_actual'], $clave_api);
                 ?>
                 <tr>
                     <td><?php echo $contenedor['id']; ?></td>
-                    <td><?php echo $contenedor['tipo']; ?></td>
-                    <td><?php echo $direccion; ?></td>
+                    <td><?php echo htmlspecialchars($contenedor['tipo']); ?></td>
+                    <td><?php echo htmlspecialchars($direccion); ?></td>
                     <td><?php echo ($contenedor['activo'] === 't') ? 'Activo' : 'Inactivo'; ?></td>
-                    <td><?php echo $contenedor['poblacion']; ?></td>
+                    <td><?php echo htmlspecialchars($contenedor['poblacion']); ?></td>
                     <td>
-                        <a href="cambiar_estado.php?id=<?php echo $contenedor['id']; ?>" class="btn-cambiar-estado">Cambiar Estado</a>
-                        <a href="ver_contenedor.php?id=<?php echo $contenedor['id']; ?>" class="btn-cambiar-estado btn-mapa">Ver en Mapa</a>
+                        <form action="cambiar_estado.php" method="GET" style="display:inline;">
+                        <input type="hidden" name="id" value="<?php echo $contenedor['id']; ?>">
+                        <button type="submit" class="btn-cambiar-estado">Cambiar Estado</button>
+                        </form>
+
+                        <form action="ver_contenedor.php" method="GET" style="display:inline;">
+                        <input type="hidden" name="id" value="<?php echo $contenedor['id']; ?>">
+                        <button type="submit" class="btn-cambiar-estado btn-mapa">Ver en Mapa</button>
+                        </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>

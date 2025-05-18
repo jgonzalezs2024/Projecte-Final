@@ -1,13 +1,24 @@
 <?php
 include('funciones.php');
+
+// Conexión a la base de datos PostgreSQL
 $conexion = conectar_base_de_datos();
 
+// ==============================================
+// CONSULTA: Obtener datos de todos los usuarios RFID
+// ==============================================
 $consulta_usuarios = "SELECT num_serie, nombre, apellido, fecha_nacimiento FROM rfid";
 $resultado = pg_query($conexion, $consulta_usuarios);
+
+// Array para almacenar los usuarios obtenidos
 $usuarios = [];
+
+// Guardar cada fila del resultado en el array
 while ($fila = pg_fetch_assoc($resultado)) {
     $usuarios[] = $fila;
 }
+
+// Cerrar la conexión con la base de datos
 pg_close($conexion);
 ?>
 
@@ -28,7 +39,6 @@ pg_close($conexion);
                     <li><a href="contenedores.php">Contenedores</a></li>
                     <li><a href="estadisticas.php">Estadísticas</a></li>
                     <li><a href="rutas_activas.php">Rutas Activas</a></li>
-
                 </ul>
             </nav>
         </div>

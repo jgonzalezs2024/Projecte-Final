@@ -1,8 +1,12 @@
 <?php
 include('funciones.php');
+// Conexión a la base de datos PostgreSQL
 $conexion = conectar_base_de_datos();
 
-$id_ruta = isset($_GET['id_ruta']);
+// Obtiene el ID de la ruta desde la URL, o 0 si no está definido
+$id_ruta = $_GET['id_ruta'];
+
+// Consulta los datos de los contenedores asociados a la ruta
 $sql = "
     SELECT 
         container.id, 
@@ -15,15 +19,20 @@ $sql = "
     ORDER BY rutas_activas.id ASC
 ";
 
+// Ejecuta la consulta con parámetro seguro
 $resultado = pg_query_params($conexion, $sql, [$id_ruta]);
+
+// Guarda los resultados en un array
 $contenedores = [];
 while ($fila = pg_fetch_assoc($resultado)) {
     $contenedores[] = $fila;
 }
 
+// Define origen y destino en función del primer y último contenedor
 $origen = $contenedores[0]['latitud_actual'] . ',' . $contenedores[0]['longitud_actual'];
 $destinacion = end($contenedores)['latitud_actual'] . ',' . end($contenedores)['longitud_actual'];
 
+// Si hay contenedores intermedios, se añaden como waypoints
 $destinos = [];
 if (count($contenedores) > 2) {
     for ($i = 1; $i < count($contenedores) - 1; $i++) {
@@ -31,19 +40,23 @@ if (count($contenedores) > 2) {
     }
 }
 
+// Construye la cadena de destinos intermedios
 $destinos_string = '';
 foreach ($destinos as $destino) {
     $destinos_string .= $destino . '|';
 }
-$destinos_string = rtrim($destinos_string, '|');
+$destinos_string = rtrim($destinos_string, '|'); // Elimina la última barra vertical
 
+// Construye la URL de Google Maps con origen, destino y waypoints si los hay
 $url_maps = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk&origin=$origen&destination=$destinacion";
 if ($destinos_string) {
     $url_maps .= "&waypoints=" . urlencode($destinos_string);
 }
 
+// Cierra la conexión con la base de datos
 pg_close($conexion);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -74,8 +87,8 @@ pg_close($conexion);
             <h1>Detalle de Ruta</h1>
             <nav>
                 <ul>
-                    <li><a href="contenedores.php">Contenedores</a></li>
                     <li><a href="inicio.php">Inicio</a></li>
+                    <li><a href="contenedores.php">Contenedores</a></li>
                     <li><a href="estadisticas.php">Estadísticas</a></li>
                     <li><a href="usuarios.php">Usuarios</a></li>
                     <li><a href="rutas_activas.php">Rutas Activas</a></li>
