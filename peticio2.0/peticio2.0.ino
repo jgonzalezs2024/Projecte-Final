@@ -1,16 +1,15 @@
 // ==============================================
 // LIBRERÍAS NECESARIAS PARA FUNCIONALIDAD WIFI Y SERIAL
 // ==============================================
-#include <WiFi.h>         // Control de conexión WiFi en ESP32
-#include <HTTPClient.h>   // Cliente HTTP para hacer peticiones GET
-#include <SoftwareSerial.h>  // Comunicación serial alternativa (aunque en ESP32 puedes usar hardware Serial2)
+#include <WiFi.h>                                 // Control de conexión WiFi en ESP32
+#include <HTTPClient.h>                           // Cliente HTTP para hacer peticiones GET
 
 
 // ==============================================
 // DEFINICIÓN DE PINES PARA SERIAL2 EN ESP32
 // ==============================================
-#define RXD2 32  // Pin RX del ESP32 (recibe datos desde TX del Arduino)
-#define TXD2 33  // Pin TX del ESP32 (envía datos hacia RX del Arduino)
+#define RXD2 32                                   // Pin RX del ESP32
+#define TXD2 33                                   // Pin TX del ESP32
 
 
 // ==============================================
@@ -24,17 +23,22 @@ const char* password = "aula110aula110";          // Contraseña WiFi
 // ==============================================
 // VARIABLES GLOBALES PARA EL PROGRAMA
 // ==============================================
-int httpResponseCode;  // Código de respuesta HTTP tras realizar una petición
-char c;                // Carácter auxiliar para lectura serial (no usado actualmente)
-String str, url;       // Variables para manejar cadenas y URLs dinámicas
+int httpResponseCode;                             // Código de respuesta HTTP tras realizar una petición
+String url, msg, payload;                         // Variables para contruir la petición y la respuesta
+
+
+// ==============================================
+// OBJETOS GLOBALES PARA EL PROGRAMA
+// ==============================================
+HTTPClient http;                                  // Crea objeto HTTPClient para gestionar la petición
 
 
 // ==============================================
 // CONFIGURACIÓN INICIAL DEL DISPOSITIVO
 // ==============================================
 void setup() {
-  Serial.begin(115200);                          // Inicializa el monitor serie a 115200 baudios
-  Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);  // Inicializa la comunicación Serial2 con Arduino
+  Serial.begin(115200);                           // Inicializa el monitor serie a 115200 baudios
+  Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);    // Inicializa la comunicación Serial2 con Arduino
 
   Serial.print("Conectandose a red: ");
   Serial.println(ssid);
@@ -61,30 +65,27 @@ void setup() {
 void loop() {
   // Comprueba si hay datos recibidos por Serial2 desde Arduino
   if (Serial2.available()) {
-    String msg = Serial2.readStringUntil('\n');  // Lee la línea completa recibida
-    msg.trim();                                 // Elimina espacios y saltos innecesarios
-    Serial.println(msg);                         // Muestra mensaje recibido en monitor serie
-
+    msg = Serial2.readStringUntil('\n');         // Lee la línea completa recibida
+    msg.trim();                                  // Elimina espacios y saltos innecesarios
     url = serverName + msg;                      // Construye la URL completa con la consulta recibida
 
     // Comprueba que la conexión WiFi siga activa antes de hacer la petición
     if (WiFi.status() == WL_CONNECTED) {
-      HTTPClient http;                           // Crea objeto HTTPClient para gestionar la petición
       http.begin(url);                           // Inicia la conexión HTTP con la URL construida
       httpResponseCode = http.GET();             // Realiza la petición GET y recibe el código HTTP
 
-      if (httpResponseCode == 200) {            // Si la petición es exitosa (OK)
-        String payload = http.getString();      // Obtiene la respuesta en texto
+      if (httpResponseCode == 200) {             // Si la petición es exitosa
+        payload = http.getString();              // Obtiene la respuesta en texto
         Serial.print("Respuesta HTTP: ");
         Serial2.println(payload);                // Envía la respuesta de vuelta al Arduino
       } else {
-        Serial.print("Error HTTP: ");            // Si hubo error, lo muestra en monitor serie
+        Serial.print("Error HTTP: ");           
         Serial.println(httpResponseCode);
       }
 
       http.end();                               // Finaliza la conexión HTTP
     } else {
-      Serial2.println("WiFi no conectado");    // Indica error de conexión WiFi por Serial2
+      Serial2.println("WiFi no conectado");    // Indica error de conexión
     }
   }
 }

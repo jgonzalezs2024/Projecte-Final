@@ -33,24 +33,26 @@ const int echoPin2 = 12;     // Echo del sensor ultrasónico 2
 // VARIABLES GLOBALES //
 // ===========================
 
-bool uidValido;              // Bandera para saber si la tarjeta RFID es válida
+bool uidValido;              // Booleano para saber si la tarjeta RFID es válida
 bool activo;                 // Estado general del contenedor
-bool tieneCoordenadas;       // Bandera para saber si se han recibido coordenadas
-bool puertaAbierta;          // Bandera para estado de la puerta
+bool tieneCoordenadas;       // Booleano para saber si se han recibido coordenadas
+bool puertaAbierta;          // Booleano para estado de la tapa
 
 float pes;                   // Peso leído por la balanza
 float distance, distance2;   // Distancias medidas por los sensores ultrasónicos
 
-int control;                 // Variable de control genérica
+int control;                 // Variable de control
 
 long duration, duration2;    // Duraciones de los pulsos ultrasónicos
+unsigned long tiempo         // Variable para controlar el tiempo de apertura de la tapa
 
 double lat, lng;             // Coordenadas GPS
 
 char c;                      // Carácter leído en GPS
 
 String peticio;              // Petición generada
-String resultat;             // Resultado de una petición o procesamiento
+String resultat;             // Resultado de una petición
+String id_container = "1";   // ID del contenedor
 
 byte ActualUID[4];           // Almacena el UID actual leído del RFID
 
@@ -61,13 +63,12 @@ byte ActualUID[4];           // Almacena el UID actual leído del RFID
 HX711 balanza;                        // Objeto para la balanza
 MFRC522 mfrc522(SS_PIN, RST_PIN);     // Objeto para el lector RFID
 TinyGPSPlus gps;                      // Objeto para el GPS
-String id_container = "1";           // ID del contenedor
 
 void setup() {
   // ===============================
   // CONFIGURACIÓN DE PINES
   // ===============================
-  pinMode(boton, INPUT_PULLUP);     // Botón con resistencia pull-up
+  pinMode(boton, INPUT_PULLUP);     // Botón
   pinMode(PinIN1, OUTPUT);          // Motor IN1
   pinMode(PinIN2, OUTPUT);          // Motor IN2
 
@@ -86,7 +87,7 @@ void setup() {
   // ===============================
   Serial.begin(115200);             // Monitor serie
   Serial1.begin(9600);              // GPS por puerto Serial1
-  Serial2.begin(9600);              // Puerto adicional (por ejemplo, WiFi/GSM)
+  Serial2.begin(9600);              // ESP32 por puerto Serial2
 
   delay(1000);                      // Espera para estabilizar
 
@@ -133,7 +134,6 @@ void setup() {
   peticio = "?comprovacio=1&id_container=" + id_container;
   resultat = enviar_i_rebre_dades(peticio);
   resultat.trim();
-  Serial.println(resultat);
 
   if (resultat == "f") {
     // Acceso denegado
@@ -190,7 +190,7 @@ void loop() {
       control = resultat.toInt();
 
       if (control == -1) {
-        Serial.println("FALLO EL CAMBIO DE ESTADO");
+        Serial.println("FALLÓ EL CAMBIO DE ESTADO");
       } else if (control == 1) {
         Serial.println("REGISTRO ACTUALIZADO");
         activo = true;
@@ -242,15 +242,17 @@ void loop() {
       // ===============================
       levantarTapa();
       delay(20000);
-      Serial.println("PUERTA ABIERTA");
-      puertaAbierta = true;
+      Serial.println("TARJETA VÁLIDA");
+      Serial.println("CONTENEDOR ABIERTO");
 
+      puertaAbierta = true;
+      tiempo = millis(); // Activamos el cronómetro
       while (puertaAbierta) {
-        if (digitalRead(boton) == LOW) {
+        // Verifica si se presionó el botón o han pasado 5 minutos desde que se encendió el crono
+        if (digitalRead(boton) == LOW || millis() - tiempo >= 300000) {
           cerrarTapa();
           delay(20000);
-          Serial.println("PUERTA CERRADA");
-
+          Serial.println("CONTENEDOR CERRADO");
           puertaAbierta = false;
         }
         delay(50);

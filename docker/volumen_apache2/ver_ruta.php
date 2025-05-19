@@ -5,6 +5,7 @@ $conexion = conectar_base_de_datos();
 
 // Obtiene el ID de la ruta desde la URL, o 0 si no está definido
 $id_ruta = $_GET['id_ruta'];
+$clave_api = "AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk";
 
 // Consulta los datos de los contenedores asociados a la ruta
 $sql = "
@@ -34,10 +35,8 @@ $destinacion = end($contenedores)['latitud_actual'] . ',' . end($contenedores)['
 
 // Si hay contenedores intermedios, se añaden como waypoints
 $destinos = [];
-if (count($contenedores) > 2) {
-    for ($i = 1; $i < count($contenedores) - 1; $i++) {
-        $destinos[] = $contenedores[$i]['latitud_actual'] . ',' . $contenedores[$i]['longitud_actual'];
-    }
+for ($i = 1; $i < count($contenedores) - 1; $i++) {
+    $destinos[] = $contenedores[$i]['latitud_actual'] . ',' . $contenedores[$i]['longitud_actual'];
 }
 
 // Construye la cadena de destinos intermedios
@@ -48,10 +47,9 @@ foreach ($destinos as $destino) {
 $destinos_string = rtrim($destinos_string, '|'); // Elimina la última barra vertical
 
 // Construye la URL de Google Maps con origen, destino y waypoints si los hay
-$url_maps = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk&origin=$origen&destination=$destinacion";
-if ($destinos_string) {
-    $url_maps .= "&waypoints=" . urlencode($destinos_string);
-}
+$url_maps = "https://www.google.com/maps/embed/v1/directions?key=$clave_api&origin=$origen&destination=$destinacion";
+$url_maps .= "&waypoints=" . urlencode($destinos_string);
+
 
 // Cierra la conexión con la base de datos
 pg_close($conexion);

@@ -27,7 +27,7 @@ pg_close($conexion);
 // ==============================================
 // CLAVE API
 // ==============================================
-$clave_api = "xxx";
+$clave_api = "AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk";
 ?>
 
 <!DOCTYPE html>
@@ -68,7 +68,7 @@ $clave_api = "xxx";
             </thead>
             <tbody>
                 <?php foreach ($contenedores as $contenedor):
-                    // Obtiene la dirección legible (calle y número) a partir de latitud y longitud
+                    // Obtiene la calle y número a partir de latitud y longitud
                     $direccion = obtenerCalleYNumero($contenedor['latitud_actual'], $contenedor['longitud_actual'], $clave_api);
                 ?>
                 <tr>

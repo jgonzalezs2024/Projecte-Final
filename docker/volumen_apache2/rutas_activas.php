@@ -88,27 +88,25 @@ foreach ($registros as $fila) {
                 <?php else: ?>
                     <?php foreach ($rutas as $id_ruta => $data): ?>
                         <tr>
-                            <td colspan="4">
-                                <a href="ver_ruta.php?id_ruta=<?php echo htmlspecialchars($id_ruta); ?>" style="display: block; text-decoration: none; color: inherit;">
-                                    <table style="width: 100%;">
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($id_ruta); ?></td>
-                                            <td><?php echo htmlspecialchars(implode(', ', $data['tipos'])); ?></td>
-                                            <td><?php echo htmlspecialchars($data['fecha_inicio']); ?></td>
-                                            <td>
-                                                <form method="POST" action="eliminar_ruta.php" onsubmit="return confirm('¿Seguro que quieres eliminar la ruta <?php echo htmlspecialchars($id_ruta); ?>?');">
-                                                    <input type="hidden" name="id_ruta" value="<?php echo htmlspecialchars($id_ruta); ?>">
-                                                    <button type="submit" class="btn-cambiar-estado">Eliminar Ruta</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </a>
+                        <td><?php echo htmlspecialchars($id_ruta); ?></td>
+                            <td><?php echo htmlspecialchars(implode(', ', $data['tipos'])); ?></td>
+                            <td><?php echo htmlspecialchars($data['fecha_inicio']); ?></td>
+                            <td>
+                                <form action="ver_ruta.php" method="GET" style="display:inline;">
+                                    <input type="hidden" name="id_ruta" value="<?php echo htmlspecialchars($id_ruta); ?>">
+                                    <button type="submit" class="btn-cambiar-estado" style="margin-right: 8px;">Ver Ruta</button>
+                                </form>
+
+                                <form method="POST" action="eliminar_ruta.php" style="display:inline;" onsubmit="return confirm('¿Seguro que quieres eliminar la ruta <?php echo htmlspecialchars($id_ruta); ?>?');">
+                                    <input type="hidden" name="id_ruta" value="<?php echo htmlspecialchars($id_ruta); ?>">
+                                    <button type="submit" class="btn-cambiar-estado">Eliminar Ruta</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
+
         </table>
     </main>
     <footer>
