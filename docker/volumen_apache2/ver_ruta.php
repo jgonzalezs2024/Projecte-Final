@@ -5,7 +5,7 @@ $conexion = conectar_base_de_datos();
 
 // Obtiene el ID de la ruta desde la URL, o 0 si no está definido
 $id_ruta = $_GET['id_ruta'];
-$clave_api = "AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk";
+$clave_api = "xxx";
 
 // Consulta los datos de los contenedores asociados a la ruta
 $sql = "

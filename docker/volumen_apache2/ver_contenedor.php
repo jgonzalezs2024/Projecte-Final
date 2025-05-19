@@ -21,7 +21,7 @@ $lat = $contenedor['latitud_actual'];
 $lng = $contenedor['longitud_actual'];
 
 // API key 
-$clave_api = "AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk";
+$clave_api = "xxx";
 
 // Construir URL para mostrar mapa con la ubicación del contenedor
 $map_url = "https://www.google.com/maps/embed/v1/place?key=$clave_api&q=$lat,$lng";

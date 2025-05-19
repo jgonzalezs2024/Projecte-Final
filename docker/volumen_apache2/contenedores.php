@@ -27,7 +27,7 @@ pg_close($conexion);
 // ==============================================
 // CLAVE API
 // ==============================================
-$clave_api = "AIzaSyAWSOFjZn4F9IdNAaW0VlsmFaM1gA1ozEk";
+$clave_api = "xxx";
 ?>
 
 <!DOCTYPE html>
