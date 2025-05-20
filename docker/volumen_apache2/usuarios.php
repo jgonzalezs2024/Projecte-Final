@@ -14,8 +14,11 @@ $resultado = pg_query($conexion, $consulta_usuarios);
 $usuarios = [];
 
 // Guardar cada fila del resultado en el array
-while ($fila = pg_fetch_assoc($resultado)) {
+$fila = pg_fetch_assoc($resultado);
+
+while ($fila) {
     $usuarios[] = $fila;
+    $fila = pg_fetch_assoc($resultado);
 }
 
 // Cerrar la conexión con la base de datos

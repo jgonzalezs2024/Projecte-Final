@@ -25,8 +25,10 @@ $resultado = pg_query_params($conexion, $sql, [$id_ruta]);
 
 // Guarda los resultados en un array
 $contenedores = [];
-while ($fila = pg_fetch_assoc($resultado)) {
+$fila = pg_fetch_assoc($resultado);
+while ($fila) {
     $contenedores[] = $fila;
+    $fila = pg_fetch_assoc($resultado);
 }
 
 // Define origen y destino en función del primer y último contenedor

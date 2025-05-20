@@ -14,11 +14,11 @@ $resultado_contenedores = pg_query($conexion, $consulta_contenedores);
 
 $contenedores = [];
 
-if ($resultado_contenedores) {
-    // Recorre todos los contenedores y los almacena en un array
-    while ($contenedor = pg_fetch_assoc($resultado_contenedores)) {
-        $contenedores[] = $contenedor;
-    }
+$contenedor = pg_fetch_assoc($resultado_contenedores);
+
+while ($contenedor) {
+    $contenedores[] = $contenedor;
+    $contenedor = pg_fetch_assoc($resultado_contenedores);
 }
 
 // Cierra la conexión a la base de datos

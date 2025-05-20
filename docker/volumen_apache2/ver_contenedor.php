@@ -34,7 +34,11 @@ $resultado_vaciado = pg_query_params($conexion, $consulta_vaciado, [$id]);
 
 // Obtener la fecha de vaciado más reciente
 $vaciado = pg_fetch_assoc($resultado_vaciado);
-$ultima_fecha_vaciado = $vaciado ? date("d/m/Y H:i", strtotime($vaciado['fecha_vaciado'])) : "Sin registro";
+if ($vaciado) {
+    $ultima_fecha_vaciado = date("d/m/Y H:i", strtotime($vaciado['fecha_vaciado']));
+} else {
+    $ultima_fecha_vaciado = "Sin registro";
+}
 
 // Cerrar conexión con la base de datos
 pg_close($conexion);

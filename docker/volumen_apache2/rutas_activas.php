@@ -35,13 +35,13 @@ foreach ($registros as $fila) {
     $tipo = $fila['tipo'];
     $fecha = $fila['fecha_inicio'];
 
-    // Si aún no se ha registrado esta ruta, inicializa su estructura
+    // Si aún no se ha registrado, se inicializa
     if (!isset($rutas[$id_ruta])) {
         $rutas[$id_ruta]['tipos'] = [];
         $rutas[$id_ruta]['fecha_inicio'] = $fecha;
     }
 
-    // Añade el tipo si no ha sido añadido antes (evita duplicados)
+    // Añade el tipo si no ha sido añadido antes
     if (!in_array($tipo, $rutas[$id_ruta]['tipos'])) {
         $rutas[$id_ruta]['tipos'][] = $tipo;
     }
